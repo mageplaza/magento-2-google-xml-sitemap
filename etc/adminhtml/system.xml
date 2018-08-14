@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Sitemap
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="seo" translate="label" type="text" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="html_sitemap" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HTML Sitemap</label>
+                <field id="enable" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable HTML Sitemap</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Default URL: http://your-domain.com/sitemap/; See <a href="https://www.mageplaza.com/magento-2-seo-extension/html-xml-sitemap.html" target="_blank">this article</a> ]]></comment>
+                </field>
+                <field id="category" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Categories Sitemap</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="product" translate="label" type="select" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Products Sitemap</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="product_limit" translate="label comment" type="text" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Limit Product Sitemap</label>
+                    <comment><![CDATA[Default is 100]]></comment>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="product">1</field>
+                    </depends>
+                </field>
+                <field id="page" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Pages Sitemap</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="exclude_page" translate="label" type="select" sortOrder="310" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Exclude Pages Sitemap</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="page">1</field>
+                    </depends>
+                </field>
+                <field id="exclude_page_listing" translate="label" type="multiselect" sortOrder="320" showInDefault="1" canRestore="1">
+                    <label>Filter Cms Pages</label>
+                    <source_model>Mageplaza\Sitemap\Model\Source\Page</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="page">1</field>
+                        <field id="exclude_page">1</field>
+                    </depends>
+                </field>
+                <field id="enable_add_links" translate="label" type="select" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Additional Links</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="additional_links" translate="label" type="textarea" sortOrder="555" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Additional Links</label>
+                    <comment>
+                        <![CDATA[
+                          - A comma-delimited list of links and link labels to append to sitemap.</br>
+                          - One link per line.</br>
+                         <b>Example:</b></br>
+                         <div style="margin-left: 30px; font-size: 12px">
+                            http://www.mageplaza.com/,Mageplaza</br>
+                            https://magento.com/,Magento
+                         </div>
+                         ]]>
+                    </comment>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="enable_add_links">1</field>
+                    </depends>
+                </field>
+                <field id="footer" translate="label" type="select" sortOrder="600" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Add Sitemap Link to Footer</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="xml_sitemap" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>XML Sitemap</label>
+                <field id="homepage_optimization" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Homepage Optimization</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>In sitemap file, it will remove the link of the CMS page using for homepage.</comment>
+                </field>
+                <field id="enable_add_link" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Additional Links</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Yes, if you want to add more custom links into sitemap XML file.</comment>
+                </field>
+                <field id="additional_links" translate="label" type="textarea" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Additional Links</label>
+                    <depends>
+                        <field id="enable_add_link">1</field>
+                    </depends>
+                    <comment>One link per line.</comment>
+                </field>
+                <field id="frequency" translate="label" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Frequency</label>
+                    <source_model>Magento\Sitemap\Model\Config\Source\Frequency</source_model>
+                    <depends>
+                        <field id="enable_add_link">1</field>
+                    </depends>
+                    <comment><![CDATA[One of the following value: <i>always, hourly, daily, weekly, monthly, yearly, never</i>. <a href="https://www.sitemaps.org/protocol.html" target="_blank">Learn more.</a>]]></comment>
+                </field>
+                <field id="priority" translate="label" type="text" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Priority</label>
+                    <depends>
+                        <field id="enable_add_link">1</field>
+                    </depends>
+                    <comment><![CDATA[From 0 to 1. E.g: 0.5 or 0.8]]></comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

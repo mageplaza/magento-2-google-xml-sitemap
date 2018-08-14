@@ -1,0 +1,22 @@
+"Parameter is incorrect.","Parameter is incorrect."
+"HTML Sitemap","HTML Sitemap"
+"Enable HTML Sitemap","Enable HTML Sitemap"
+"Enable Categories Sitemap","Enable Categories Sitemap"
+"Enable Products Sitemap","Enable Products Sitemap"
+"Limit Product Sitemap","Limit Product Sitemap"
+"Default is 100","Default is 100"
+"Enable Pages Sitemap","Enable Pages Sitemap"
+"Enable Exclude Pages Sitemap","Enable Exclude Pages Sitemap"
+"Filter Cms Pages","Filter Cms Pages"
+"Enable Additional Links","Enable Additional Links"
+"Additional Links","Additional Links"
+"Add Sitemap Link to Footer","Add Sitemap Link to Footer"
+"XML Sitemap","XML Sitemap"
+"Homepage Optimization","Homepage Optimization"
+"In sitemap file, it will remove the link of the CMS page using for homepage.","In sitemap file, it will remove the link of the CMS page using for homepage."
+"Yes, if you want to add more custom links into sitemap XML file.","Yes, if you want to add more custom links into sitemap XML file."
+Frequency,Frequency
+Priority,Priority
+"Exclude Sitemap","Exclude Sitemap"
+"Added by Mageplaza Sitemap","Added by Mageplaza Sitemap"
+Sitemap,Sitemap
