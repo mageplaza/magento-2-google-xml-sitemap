@@ -34,7 +34,7 @@ The second type is **HTML Sitemap** used mainly for the users to know the site's
 Run the following command in Magento 2 root folder:
 
 ```
-composer require mageplaza/module-sitemap
+composer require mageplaza/magento-2-seo-extension mageplaza/module-sitemap
 php bin/magento setup:upgrade
 php bin/magento setup:static-content:deploy
 ```
