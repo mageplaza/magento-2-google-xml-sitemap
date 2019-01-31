@@ -39,8 +39,7 @@ class InstallSchema implements InstallSchemaInterface
     public function install(
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
-    )
-    {
+    ) {
         $setup->startSetup();
 
         $setup->getConnection()->addColumn($setup->getTable('cms_page'), 'mp_exclude_sitemap', [

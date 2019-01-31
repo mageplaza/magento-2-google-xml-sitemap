@@ -23,7 +23,6 @@ namespace Mageplaza\Sitemap\Block;
 
 use Magento\Catalog\Helper\Category;
 use Magento\Catalog\Model\CategoryRepository;
-use Magento\Catalog\Model\Indexer\Category\Flat\State;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
@@ -32,7 +31,6 @@ use Magento\CatalogInventory\Helper\Stock;
 use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Theme\Block\Html\Topmenu;
 use Mageplaza\Sitemap\Helper\Data as HelperConfig;
 
 /**
@@ -90,24 +88,21 @@ class Sitemap extends Template
 
     /**
      * Sitemap constructor.
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Catalog\Helper\Category $categoryHelper
-     * @param \Magento\Catalog\Model\Indexer\Category\Flat\State $categoryFlatState
-     * @param \Magento\Theme\Block\Html\Topmenu $topMenu
-     * @param \Magento\Catalog\Model\ResourceModel\Category\Collection $collection
-     * @param \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
-     * @param \Magento\Catalog\Model\CategoryRepository $categoryRepository
+     *
+     * @param Context $context
+     * @param Category $categoryHelper
+     * @param Collection $collection
+     * @param CollectionFactory $categoryCollection
+     * @param CategoryRepository $categoryRepository
      * @param HelperConfig $helper
-     * @param \Magento\CatalogInventory\Helper\Stock $stockFilter
-     * @param \Magento\Catalog\Model\Product\Visibility $productVisibility
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection
-     * @param \Magento\Cms\Model\ResourceModel\Page\Collection $pageCollection
+     * @param Stock $stockFilter
+     * @param ProductVisibility $productVisibility
+     * @param ProductCollection $productCollection
+     * @param PageCollection $pageCollection
      */
     public function __construct(
         Context $context,
         Category $categoryHelper,
-        State $categoryFlatState,
-        Topmenu $topMenu,
         Collection $collection,
         CollectionFactory $categoryCollection,
         CategoryRepository $categoryRepository,
@@ -116,17 +111,16 @@ class Sitemap extends Template
         ProductVisibility $productVisibility,
         ProductCollection $productCollection,
         PageCollection $pageCollection
-    )
-    {
-        $this->collection          = $collection;
-        $this->_categoryHelper     = $categoryHelper;
+    ) {
+        $this->collection = $collection;
+        $this->_categoryHelper = $categoryHelper;
         $this->_categoryCollection = $categoryCollection;
-        $this->categoryRepository  = $categoryRepository;
-        $this->_helper             = $helper;
-        $this->_stockFilter        = $stockFilter;
-        $this->productVisibility   = $productVisibility;
-        $this->productCollection   = $productCollection;
-        $this->pageCollection      = $pageCollection;
+        $this->categoryRepository = $categoryRepository;
+        $this->_helper = $helper;
+        $this->_stockFilter = $stockFilter;
+        $this->productVisibility = $productVisibility;
+        $this->productCollection = $productCollection;
+        $this->pageCollection = $pageCollection;
 
         parent::__construct($context);
     }
@@ -137,7 +131,7 @@ class Sitemap extends Template
      */
     public function getProductCollection()
     {
-        $limit      = $this->_helper->getProductLimit() ? $this->_helper->getProductLimit() : self::DEFAULT_PRODUCT_LIMIT;
+        $limit = $this->_helper->getProductLimit() ? $this->_helper->getProductLimit() : self::DEFAULT_PRODUCT_LIMIT;
         $collection = $this->productCollection
             ->setVisibility($this->productVisibility->getVisibleInCatalogIds())
             ->addMinimalPrice()
@@ -161,6 +155,7 @@ class Sitemap extends Template
 
     /**
      * @param $categoryId
+     *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -201,7 +196,7 @@ class Sitemap extends Template
     public function getAdditionLinksCollection()
     {
         $additionLinks = $this->_helper->getAdditionalLinks();
-        $allLink       = explode("\n", $additionLinks);
+        $allLink = explode("\n", $additionLinks);
 
         $result = [];
         foreach ($allLink as $link) {
@@ -215,8 +210,10 @@ class Sitemap extends Template
 
     /**
      * Render link element
+     *
      * @param $link
      * @param $title
+     *
      * @return string
      */
     public function renderLinkElement($link, $title)
@@ -229,6 +226,7 @@ class Sitemap extends Template
      * @param $config
      * @param $title
      * @param $collection
+     *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */

@@ -81,6 +81,7 @@ class Sitemap extends CoreSitemap
 
     /**
      * Sitemap constructor.
+     *
      * @param Context $context
      * @param Registry $registry
      * @param Escaper $escaper
@@ -123,13 +124,12 @@ class Sitemap extends CoreSitemap
         AbstractResource $resource = null,
         AbstractDb $resourceCollection = null,
         array $data = []
-    )
-    {
-        $this->helperConfig         = $helperConfig;
-        $this->_coreProductFactory  = $coreProductFactory;
-        $this->_corePageFactory     = $corePageFactory;
+    ) {
+        $this->helperConfig = $helperConfig;
+        $this->_coreProductFactory = $coreProductFactory;
+        $this->_corePageFactory = $corePageFactory;
         $this->_coreCategoryFactory = $coreCategoryFactory;
-        $this->stockItem            = $stockItem;
+        $this->stockItem = $stockItem;
 
         parent::__construct(
             $context,
@@ -156,9 +156,9 @@ class Sitemap extends CoreSitemap
     public function _initSitemapItems()
     {
         parent::_initSitemapItems();
-        $helper                = $this->_sitemapData;
-        $storeId               = $this->getStoreId();
-        $this->_sitemapItems   = null;
+        $helper = $this->_sitemapData;
+        $storeId = $this->getStoreId();
+        $this->_sitemapItems = null;
         $this->_sitemapItems[] = new \Magento\Framework\DataObject(
             [
                 'changefreq' => $helper->getCategoryChangefreq($storeId),
@@ -209,8 +209,8 @@ class Sitemap extends CoreSitemap
         /** @var $sitemapItem \Magento\Framework\DataObject */
         foreach ($this->_sitemapItems as $item) {
             $changefreq = $item->getChangefreq();
-            $priority   = $item->getPriority();
-            $urlType    = $item->getUrlType();
+            $priority = $item->getPriority();
+            $urlType = $item->getUrlType();
             foreach ($item->getCollection() as $itemChild) {
                 $xml = $this->getSitemapRow(
                     $itemChild->getUrl(),
@@ -236,10 +236,10 @@ class Sitemap extends CoreSitemap
 
         if ($this->_sitemapIncrement == 1) {
             // In case when only one increment file was created use it as default sitemap
-            $path        = rtrim(
-                    $this->getSitemapPath(),
-                    '/'
-                ) . '/' . $this->_getCurrentSitemapFilename(
+            $path = rtrim(
+                        $this->getSitemapPath(),
+                        '/'
+                    ) . '/' . $this->_getCurrentSitemapFilename(
                     $this->_sitemapIncrement
                 );
             $destination = rtrim($this->getSitemapPath(), '/') . '/' . $this->getSitemapFilename();
@@ -263,12 +263,14 @@ class Sitemap extends CoreSitemap
 
     /**
      * Get site map row
+     *
      * @param $url
      * @param $urlType
      * @param null $lastmod
      * @param null $changefreq
      * @param null $priority
      * @param null $images
+     *
      * @return string
      */
     protected function getSitemapRow($url, $urlType, $lastmod = null, $changefreq = null, $priority = null, $images = null)
@@ -313,12 +315,14 @@ class Sitemap extends CoreSitemap
 
     /**
      * Get link collection added by config Additional Links
+     *
      * @param $storeId
+     *
      * @return array
      */
     public function getLinkCollectionAdded($storeId)
     {
-        $id         = 1;
+        $id = 1;
         $collection = [];
         foreach ($this->helperConfig->getXmlAdditionalLinks($storeId) as $item) {
             if ($item != null) {
@@ -335,7 +339,9 @@ class Sitemap extends CoreSitemap
 
     /**
      * Get category collection
+     *
      * @param $storeId
+     *
      * @return array
      */
     public function _getCategoryCollection($storeId)
@@ -353,15 +359,16 @@ class Sitemap extends CoreSitemap
 
     /**
      * Get page collection
+     *
      * @param $storeId
+     *
      * @return array
      */
     public function _getPageCollection($storeId)
     {
         $collection = [];
         foreach ($this->_cmsFactory->create()->getCollection($storeId) as $item) {
-            if (
-                $this->_corePageFactory->create()->load($item->getId())->getData('mp_exclude_sitemap') == 1
+            if ($this->_corePageFactory->create()->load($item->getId())->getData('mp_exclude_sitemap') == 1
                 || $this->optimizeHomepage($storeId, $item)
             ) {
                 continue;
@@ -374,7 +381,9 @@ class Sitemap extends CoreSitemap
 
     /**
      * Get product Collection
+     *
      * @param $storeId
+     *
      * @return array
      */
     public function _getProductCollection($storeId)
@@ -395,7 +404,9 @@ class Sitemap extends CoreSitemap
 
     /**
      * Convert Url
+     *
      * @param $url
+     *
      * @return string
      */
     public function convertUrl($url)
@@ -409,8 +420,10 @@ class Sitemap extends CoreSitemap
 
     /**
      * Remove the link of the CMS page using for homepage.
+     *
      * @param $storeId
      * @param $page
+     *
      * @return bool
      */
     public function optimizeHomepage($storeId, $page)

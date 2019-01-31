@@ -48,16 +48,16 @@ class InstallData implements InstallDataInterface
 
     /**
      * InstallData constructor.
+     *
      * @param \Magento\Eav\Setup\EavSetupFactory $eavSetupFactory
      * @param \Magento\Catalog\Setup\CategorySetupFactory $categorySetupFactory
      */
     public function __construct(
         EavSetupFactory $eavSetupFactory,
         CategorySetupFactory $categorySetupFactory
-    )
-    {
+    ) {
         $this->categorySetupFactory = $categorySetupFactory;
-        $this->eavSetupFactory      = $eavSetupFactory;
+        $this->eavSetupFactory = $eavSetupFactory;
     }
 
     /**
@@ -74,30 +74,29 @@ class InstallData implements InstallDataInterface
          */
         $eavSetup->removeAttribute(Product::ENTITY, 'mp_exclude_sitemap');
         $eavSetup->addAttribute(Product::ENTITY, 'mp_exclude_sitemap', [
-                'type'                    => 'varchar',
-                'backend'                 => '',
-                'frontend'                => '',
-                'label'                   => 'Exclude Sitemap',
-                'note'                    => 'Added by Mageplaza Sitemap',
-                'input'                   => 'select',
-                'class'                   => '',
-                'source'                  => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
-                'global'                  => ScopedAttributeInterface::SCOPE_GLOBAL,
-                'visible'                 => true,
-                'required'                => false,
-                'user_defined'            => false,
-                'default'                 => '',
-                'searchable'              => false,
-                'filterable'              => false,
-                'comparable'              => false,
-                'visible_on_front'        => false,
-                'used_in_product_listing' => true,
-                'unique'                  => false,
-                'group'                   => 'Search Engine Optimization',
-                'sort_order'              => 100,
-                'apply_to'                => '',
-            ]
-        );
+            'type'                    => 'varchar',
+            'backend'                 => '',
+            'frontend'                => '',
+            'label'                   => 'Exclude Sitemap',
+            'note'                    => 'Added by Mageplaza Sitemap',
+            'input'                   => 'select',
+            'class'                   => '',
+            'source'                  => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+            'global'                  => ScopedAttributeInterface::SCOPE_GLOBAL,
+            'visible'                 => true,
+            'required'                => false,
+            'user_defined'            => false,
+            'default'                 => '',
+            'searchable'              => false,
+            'filterable'              => false,
+            'comparable'              => false,
+            'visible_on_front'        => false,
+            'used_in_product_listing' => true,
+            'unique'                  => false,
+            'group'                   => 'Search Engine Optimization',
+            'sort_order'              => 100,
+            'apply_to'                => '',
+        ]);
 
         /**
          * Category attribute
@@ -106,16 +105,15 @@ class InstallData implements InstallDataInterface
 
         $categorySetup->removeAttribute(Category::ENTITY, 'mp_exclude_sitemap');
         $categorySetup->addAttribute(Category::ENTITY, 'mp_exclude_sitemap', [
-                'type'       => 'int',
-                'label'      => '',
-                'input'      => 'select',
-                'source'     => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
-                'required'   => false,
-                'sort_order' => 100,
-                'global'     => ScopedAttributeInterface::SCOPE_STORE,
-                'group'      => 'Search Engine Optimization',
-            ]
-        );
+            'type'       => 'int',
+            'label'      => '',
+            'input'      => 'select',
+            'source'     => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+            'required'   => false,
+            'sort_order' => 100,
+            'global'     => ScopedAttributeInterface::SCOPE_STORE,
+            'group'      => 'Search Engine Optimization',
+        ]);
 
         $setup->endSetup();
     }

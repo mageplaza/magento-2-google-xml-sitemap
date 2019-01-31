@@ -3,7 +3,7 @@
 - Installation guide: https://www.mageplaza.com/install-magento-2-extension/
 - User Guide: http://docs.mageplaza.com/seo-ultimate/index.html?highlight=sitemap#html-sitemap
 - Download from our Live site: https://www.mageplaza.com/magento-2-seo-extension/
-- Changelog: https://www.mageplaza.com/changelog/m2-seo.txt
+- Changelog: https://www.mageplaza.com/releases/google-xml-sitemap/
 
 ## FAQs
 

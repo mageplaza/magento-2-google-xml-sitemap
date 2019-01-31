@@ -121,14 +121,14 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Yes, if you want to add more custom links into sitemap XML file.</comment>
                 </field>
-                <field id="additional_links" translate="label" type="textarea" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="additional_links" translate="label comment" type="textarea" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Additional Links</label>
                     <depends>
                         <field id="enable_add_link">1</field>
                     </depends>
                     <comment>One link per line.</comment>
                 </field>
-                <field id="frequency" translate="label" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="frequency" translate="label comment" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Frequency</label>
                     <source_model>Magento\Sitemap\Model\Config\Source\Frequency</source_model>
                     <depends>
@@ -136,7 +136,7 @@
                     </depends>
                     <comment><![CDATA[One of the following value: <i>always, hourly, daily, weekly, monthly, yearly, never</i>. <a href="https://www.sitemaps.org/protocol.html" target="_blank">Learn more.</a>]]></comment>
                 </field>
-                <field id="priority" translate="label" type="text" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="priority" translate="label comment" type="text" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Priority</label>
                     <depends>
                         <field id="enable_add_link">1</field>
