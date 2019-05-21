@@ -65,4 +65,28 @@ Let's take a look of how is Sitemap configuration displayed in SEO plugin backen
 
 ## Conclusion
 
-A website can still operate, though it has shown sitemap or not. However, a web page has a clear and detailed sitemap will bring more benefit than ever for both website owners and users as well. With Mageplaza Sitemap integrated in SEO extension, your SEO will be more efficient and effective that results in traffic increase of your website then does revenue. 
+A website can still operate, though it has shown sitemap or not. However, a web page has a clear and detailed sitemap will bring more benefit than ever for both website owners and users as well. With Mageplaza Sitemap integrated in [SEO extension](https://github.com/mageplaza/magento-2-seo), your SEO will be more efficient and effective that results in traffic increase of your website then does revenue. 
+
+**People also search:**
+- magento 2 sitemap extension
+- magento 2 html sitemap
+- html sitemap magento 2
+- magento 2 html sitemap extension free
+- magento 2 sitemap
+- magento 2 sitemap page
+- magento 2 google sitemap
+- magento 2 sitemap html
+- generate sitemap magento 2
+- magento 2 sitemap.xml
+
+
+**Other free extension on Github**
+- [Magento 2 SEO](https://github.com/mageplaza/magento-2-seo)
+- [Magento 2 Google Maps](https://github.com/mageplaza/magento-2-google-maps)
+- [Magento 2 Delete Orders](https://github.com/mageplaza/magento-2-delete-orders)
+- [Magento 2 GDPR Free](https://github.com/mageplaza/magento-2-gdpr)
+- [Magento 2 login as customer](https://github.com/mageplaza/magento-2-login-as-customer)
+- [Magento 2 Social login](https://github.com/mageplaza/magento-2-social-login)
+- [Magento 2 Advanced reports](https://github.com/mageplaza/magento-2-reports)
+- [Magento 2 Blog](https://github.com/mageplaza/magento-2-blog)
+
