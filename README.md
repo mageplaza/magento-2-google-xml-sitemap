@@ -1,4 +1,4 @@
-# Magento 2 Google XML Sitemap FREE by Mageplaza
+# Magento 2 Google XML Sitemap extension FREE
 
 **Google XML Sitemap for Magento 2** helps Google search bots find all every corner on your website to index, bring in potential benefits for your SEO strategy. Also, the HTML sitemap will help users more easily search for information on your site than only use Magento default.
 
