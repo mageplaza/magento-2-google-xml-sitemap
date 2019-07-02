@@ -46,6 +46,7 @@
                 </field>
                 <field id="product_limit" translate="label comment" type="text" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Limit Product Sitemap</label>
+                    <validate>validate-digits validate-not-negative-number</validate>
                     <comment><![CDATA[Default is 100]]></comment>
                     <depends>
                         <field id="enable">1</field>
