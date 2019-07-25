@@ -37,20 +37,20 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 class InstallData implements InstallDataInterface
 {
     /**
-     * @var \Magento\Catalog\Setup\CategorySetupFactory
+     * @var CategorySetupFactory
      */
     protected $categorySetupFactory;
 
     /**
-     * @var \Magento\Eav\Setup\EavSetupFactory
+     * @var EavSetupFactory
      */
     protected $eavSetupFactory;
 
     /**
      * InstallData constructor.
      *
-     * @param \Magento\Eav\Setup\EavSetupFactory $eavSetupFactory
-     * @param \Magento\Catalog\Setup\CategorySetupFactory $categorySetupFactory
+     * @param EavSetupFactory $eavSetupFactory
+     * @param CategorySetupFactory $categorySetupFactory
      */
     public function __construct(
         EavSetupFactory $eavSetupFactory,
@@ -61,8 +61,8 @@ class InstallData implements InstallDataInterface
     }
 
     /**
-     * @param \Magento\Framework\Setup\ModuleDataSetupInterface $setup
-     * @param \Magento\Framework\Setup\ModuleContextInterface $context
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface $context
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
@@ -81,7 +81,7 @@ class InstallData implements InstallDataInterface
             'note'                    => 'Added by Mageplaza Sitemap',
             'input'                   => 'select',
             'class'                   => '',
-            'source'                  => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+            'source'                  => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
             'global'                  => ScopedAttributeInterface::SCOPE_GLOBAL,
             'visible'                 => true,
             'required'                => false,
@@ -108,7 +108,7 @@ class InstallData implements InstallDataInterface
             'type'       => 'int',
             'label'      => '',
             'input'      => 'select',
-            'source'     => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+            'source'     => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
             'required'   => false,
             'sort_order' => 100,
             'global'     => ScopedAttributeInterface::SCOPE_STORE,

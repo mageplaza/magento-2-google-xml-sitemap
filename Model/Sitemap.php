@@ -21,6 +21,7 @@
 
 namespace Mageplaza\Sitemap\Model;
 
+use Exception;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogInventory\Model\Stock\Item;
@@ -28,7 +29,9 @@ use Magento\Cms\Model\PageFactory;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\DataObject;
 use Magento\Framework\Escaper;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
@@ -55,17 +58,17 @@ class Sitemap extends CoreSitemap
     const HOMEPAGE_PATH = 'web/default/cms_home_page';
 
     /**
-     * @var \Magento\Catalog\Model\CategoryFactory
+     * @var CategoryFactory
      */
     protected $_coreCategoryFactory;
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var ProductFactory
      */
     protected $_coreProductFactory;
 
     /**
-     * @var \Magento\Cms\Model\PageFactory
+     * @var PageFactory
      */
     protected $_corePageFactory;
 
@@ -75,7 +78,7 @@ class Sitemap extends CoreSitemap
     protected $helperConfig;
 
     /**
-     * @var \Magento\CatalogInventory\Model\Stock\Item
+     * @var Item
      */
     protected $stockItem;
 
@@ -159,7 +162,7 @@ class Sitemap extends CoreSitemap
         $helper = $this->_sitemapData;
         $storeId = $this->getStoreId();
         $this->_sitemapItems = null;
-        $this->_sitemapItems[] = new \Magento\Framework\DataObject(
+        $this->_sitemapItems[] = new DataObject(
             [
                 'changefreq' => $helper->getCategoryChangefreq($storeId),
                 'priority'   => $helper->getCategoryPriority($storeId),
@@ -168,7 +171,7 @@ class Sitemap extends CoreSitemap
             ]
         );
 
-        $this->_sitemapItems[] = new \Magento\Framework\DataObject(
+        $this->_sitemapItems[] = new DataObject(
             [
                 'changefreq' => $helper->getProductChangefreq($storeId),
                 'priority'   => $helper->getProductPriority($storeId),
@@ -177,7 +180,7 @@ class Sitemap extends CoreSitemap
             ]
         );
 
-        $this->_sitemapItems[] = new \Magento\Framework\DataObject(
+        $this->_sitemapItems[] = new DataObject(
             [
                 'changefreq' => $helper->getPageChangefreq($storeId),
                 'priority'   => $helper->getPagePriority($storeId),
@@ -187,7 +190,7 @@ class Sitemap extends CoreSitemap
         );
 
         if ($this->helperConfig->isEnableAdditionalLinks($storeId)) {
-            $this->_sitemapItems[] = new \Magento\Framework\DataObject(
+            $this->_sitemapItems[] = new DataObject(
                 [
                     'changefreq' => $this->helperConfig->getFrequency($storeId),
                     'priority'   => $this->helperConfig->getPriority($storeId),
@@ -200,13 +203,13 @@ class Sitemap extends CoreSitemap
 
     /**
      * @return $this
-     * @throws \Exception
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws Exception
+     * @throws LocalizedException
      */
     public function generateXml()
     {
         $this->_initSitemapItems();
-        /** @var $sitemapItem \Magento\Framework\DataObject */
+        /** @var $sitemapItem DataObject */
         foreach ($this->_sitemapItems as $item) {
             $changefreq = $item->getChangefreq();
             $priority = $item->getPriority();
@@ -236,12 +239,8 @@ class Sitemap extends CoreSitemap
 
         if ($this->_sitemapIncrement == 1) {
             // In case when only one increment file was created use it as default sitemap
-            $path = rtrim(
-                        $this->getSitemapPath(),
-                        '/'
-                    ) . '/' . $this->_getCurrentSitemapFilename(
-                    $this->_sitemapIncrement
-                );
+            $path = rtrim($this->getSitemapPath(), '/') . '/'
+                    . $this->_getCurrentSitemapFilename($this->_sitemapIncrement);
             $destination = rtrim($this->getSitemapPath(), '/') . '/' . $this->getSitemapFilename();
 
             $this->_directory->renameFile($path, $destination);
@@ -273,8 +272,14 @@ class Sitemap extends CoreSitemap
      *
      * @return string
      */
-    protected function getSitemapRow($url, $urlType, $lastmod = null, $changefreq = null, $priority = null, $images = null)
-    {
+    protected function getSitemapRow(
+        $url,
+        $urlType,
+        $lastmod = null,
+        $changefreq = null,
+        $priority = null,
+        $images = null
+    ) {
         if ($urlType == self::URL) {
             $url = $this->_getUrl($url);
         } else {
@@ -304,9 +309,8 @@ class Sitemap extends CoreSitemap
             // Add PageMap image for Google web search
             $row .= '<PageMap xmlns="http://www.google.com/schemas/sitemap-pagemap/1.0"><DataObject type="thumbnail">';
             $row .= '<Attribute name="name" value="' . htmlspecialchars($images->getTitle()) . '"/>';
-            $row .= '<Attribute name="src" value="' . htmlspecialchars(
-                    $this->_getMediaUrl($images->getThumbnail())
-                ) . '"/>';
+            $row .= '<Attribute name="src" value="' . htmlspecialchars($this->_getMediaUrl($images->getThumbnail()))
+                    . '"/>';
             $row .= '</DataObject></PageMap>';
         }
 
@@ -325,8 +329,8 @@ class Sitemap extends CoreSitemap
         $id = 1;
         $collection = [];
         foreach ($this->helperConfig->getXmlAdditionalLinks($storeId) as $item) {
-            if ($item != null) {
-                $obj = ObjectManager::getInstance()->create('\Magento\Framework\DataObject');
+            if ($item !== null) {
+                $obj = ObjectManager::getInstance()->create(\Magento\Framework\DataObject::class);
                 $obj->setData('id', $id++);
                 $obj->setData('url', $item);
                 $obj->setData('updated_at', $this->getSitemapTime());
@@ -347,6 +351,7 @@ class Sitemap extends CoreSitemap
     public function _getCategoryCollection($storeId)
     {
         $collection = [];
+
         foreach ($this->_categoryFactory->create()->getCollection($storeId) as $item) {
             if ($this->_coreCategoryFactory->create()->load($item->getId())->getData('mp_exclude_sitemap') == 1) {
                 continue;
@@ -428,12 +433,7 @@ class Sitemap extends CoreSitemap
      */
     public function optimizeHomepage($storeId, $page)
     {
-        if ($this->helperConfig->isEnableHomepageOptimization($storeId) == 1) {
-            if ($this->helperConfig->getConfigValue(self::HOMEPAGE_PATH, $storeId) == $page->getUrl()) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->helperConfig->isEnableHomepageOptimization($storeId) == 1
+               && $this->helperConfig->getConfigValue(self::HOMEPAGE_PATH, $storeId) == $page->getUrl();
     }
 }

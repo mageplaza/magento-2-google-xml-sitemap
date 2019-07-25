@@ -21,7 +21,8 @@
 
 namespace Mageplaza\Sitemap\Model\Source;
 
-use Magento\Cms\Model\PageFactory;
+use Magento\Cms\Model\ResourceModel\Page\Collection;
+use Magento\Cms\Model\ResourceModel\Page\CollectionFactory;
 
 /**
  * Class Page
@@ -30,18 +31,18 @@ use Magento\Cms\Model\PageFactory;
 class Page
 {
     /**
-     * @var \Magento\Cms\Model\PageFactory
+     * @var CollectionFactory
      */
-    protected $_pageFactory;
+    protected $_pageCollectionFactory;
 
     /**
      * Page constructor.
      *
-     * @param \Magento\Cms\Model\PageFactory $pageFactory
+     * @param CollectionFactory $pageCollectionFactory
      */
-    public function __construct(PageFactory $pageFactory)
+    public function __construct(CollectionFactory $pageCollectionFactory)
     {
-        $this->_pageFactory = $pageFactory;
+        $this->_pageCollectionFactory = $pageCollectionFactory;
     }
 
     /**
@@ -51,7 +52,8 @@ class Page
     public function toOptionArray()
     {
         $options = [];
-        $collection = $this->_pageFactory->create()->getCollection();
+        /** @var Collection $collection */
+        $collection = $this->_pageCollectionFactory->create();
         foreach ($collection as $item) {
             $options[] = ['value' => $item->getIdentifier(), 'label' => $item->getTitle()];
         }

@@ -22,32 +22,36 @@
 namespace Mageplaza\Sitemap\Setup;
 
 use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Magento\Framework\Setup\UpgradeSchemaInterface;
 
 /**
  * Class InstallSchema
  * @package Mageplaza\Sitemap\Setup
  */
-class InstallSchema implements InstallSchemaInterface
+class UpgradeSchema implements UpgradeSchemaInterface
 {
     /**
      * @param SchemaSetupInterface $setup
      * @param ModuleContextInterface $context
      */
-    public function install(
-        SchemaSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        $setup->startSetup();
+    public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+        $installer->startSetup();
+        $connection = $installer->getConnection();
 
-        $setup->getConnection()->addColumn($setup->getTable('cms_page'), 'mp_exclude_sitemap', [
-            'type'     => Table::TYPE_INTEGER,
-            'nullable' => false,
-            'comment'  => 'exclude sitemap',
-        ]);
+        if (version_compare($context->getVersion(), '2.0.1', '<')) {
+            if ($installer->tableExists('cms_page')) {
+                $connection->modifyColumn(
+                    $installer->getTable('cms_page'),
+                    'mp_exclude_sitemap',
+                    ['type' => Table::TYPE_INTEGER, 'nullable' => true]
+                );
+            }
+        }
 
-        $setup->endSetup();
+        $installer->endSetup();
     }
 }

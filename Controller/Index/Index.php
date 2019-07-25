@@ -24,6 +24,7 @@ namespace Mageplaza\Sitemap\Controller\Index;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 use Mageplaza\Sitemap\Helper\Data as HelperConfig;
 
@@ -34,7 +35,7 @@ use Mageplaza\Sitemap\Helper\Data as HelperConfig;
 class Index extends Action
 {
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
+     * @var PageFactory
      */
     protected $pageFactory;
 
@@ -59,8 +60,8 @@ class Index extends Action
     }
 
     /**
-     * @return \Magento\Framework\View\Result\Page
-     * @throws \Magento\Framework\Exception\NotFoundException
+     * @return Page
+     * @throws NotFoundException
      */
     public function execute()
     {
