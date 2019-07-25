@@ -52,7 +52,10 @@ class Data extends AbstractHelper
      */
     public function getHtmlSitemapConfig($code, $storeId = null)
     {
-        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/' . self::HTML_SITEMAP_CONFIGUARATION . $code, $storeId);
+        return $this->getConfigValue(
+            self::CONFIG_MODULE_PATH . '/' . self::HTML_SITEMAP_CONFIGUARATION . $code,
+            $storeId
+        );
     }
 
     /**
@@ -68,7 +71,7 @@ class Data extends AbstractHelper
      * Is enable page site map
      * @return mixed
      */
-    public function iisEnablePageSitemap()
+    public function isEnablePageSitemap()
     {
         return $this->getHtmlSitemapConfig('page');
     }
@@ -136,7 +139,10 @@ class Data extends AbstractHelper
      */
     public function getXmlSitemapConfig($code, $storeId = null)
     {
-        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/' . self::XML_SITEMAP_CONFIGUARATION . $code, $storeId);
+        return $this->getConfigValue(
+            self::CONFIG_MODULE_PATH . '/' . self::XML_SITEMAP_CONFIGUARATION . $code,
+            $storeId
+        );
     }
 
     /**

@@ -28,7 +28,9 @@ use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\CatalogInventory\Helper\Stock;
+use Magento\Cms\Model\Page;
 use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Mageplaza\Sitemap\Helper\Data as HelperConfig;
@@ -42,22 +44,22 @@ class Sitemap extends Template
     const DEFAULT_PRODUCT_LIMIT = 100;
 
     /**
-     * @var \Magento\Catalog\Helper\Category
+     * @var Category
      */
     protected $_categoryHelper;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
+     * @var CollectionFactory
      */
     protected $_categoryCollection;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Category\Collection
+     * @var Collection
      */
     protected $collection;
 
     /**
-     * @var \Magento\Catalog\Model\CategoryRepository
+     * @var CategoryRepository
      */
     protected $categoryRepository;
 
@@ -67,22 +69,22 @@ class Sitemap extends Template
     protected $_helper;
 
     /**
-     * @var \Magento\CatalogInventory\Helper\Stock
+     * @var Stock
      */
     protected $_stockFilter;
 
     /**
-     * @var \Magento\Catalog\Model\Product\Visibility
+     * @var ProductVisibility
      */
     protected $productVisibility;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
+     * @var ProductCollection
      */
     protected $productCollection;
 
     /**
-     * @var \Magento\Cms\Model\ResourceModel\Page\Collection
+     * @var PageCollection
      */
     protected $pageCollection;
 
@@ -131,7 +133,7 @@ class Sitemap extends Template
      */
     public function getProductCollection()
     {
-        $limit = $this->_helper->getProductLimit() ? $this->_helper->getProductLimit() : self::DEFAULT_PRODUCT_LIMIT;
+        $limit = $this->_helper->getProductLimit() ?: self::DEFAULT_PRODUCT_LIMIT;
         $collection = $this->productCollection
             ->setVisibility($this->productVisibility->getVisibleInCatalogIds())
             ->addMinimalPrice()
@@ -150,14 +152,14 @@ class Sitemap extends Template
      */
     public function getCategoryCollection()
     {
-        return $this->_categoryHelper->getStoreCategories(false, true, true);
+        return $this->_categoryHelper->getStoreCategories(false, true);
     }
 
     /**
      * @param $categoryId
      *
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function getCategoryUrl($categoryId)
     {
@@ -170,7 +172,7 @@ class Sitemap extends Template
      */
     public function getPageCollection()
     {
-        return $this->pageCollection->addFieldToFilter('is_active', \Magento\Cms\Model\Page::STATUS_ENABLED)
+        return $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
             ->addFieldToFilter('identifier', [
                 'nin' => $this->getExcludedPages()
             ]);
@@ -228,7 +230,7 @@ class Sitemap extends Template
      * @param $collection
      *
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function renderSection($section, $config, $title, $collection)
     {
@@ -245,7 +247,7 @@ class Sitemap extends Template
                             break;
                         case 'page':
                             if (in_array($item->getIdentifier(), $this->getExcludedPages())) {
-                                continue;
+                                continue 2;
                             }
                             $html .= $this->renderLinkElement($this->getUrl($item->getIdentifier()), $item->getTitle());
                             break;
@@ -267,15 +269,35 @@ class Sitemap extends Template
 
     /**
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function renderHtmlSitemap()
     {
         $htmlSitemap = '';
-        $htmlSitemap .= $this->renderSection('category', $this->_helper->isEnableCategorySitemap(), 'Categories', $this->getCategoryCollection());
-        $htmlSitemap .= $this->renderSection('page', $this->_helper->iisEnablePageSitemap(), 'Pages', $this->getPageCollection());
-        $htmlSitemap .= $this->renderSection('product', $this->_helper->isEnableProductSitemap(), 'Products', $this->getProductCollection());
-        $htmlSitemap .= $this->renderSection('link', $this->_helper->isEnableAddLinksSitemap(), 'Additional links', $this->getAdditionLinksCollection());
+        $htmlSitemap .= $this->renderSection(
+            'category',
+            $this->_helper->isEnableCategorySitemap(),
+            'Categories',
+            $this->getCategoryCollection()
+        );
+        $htmlSitemap .= $this->renderSection(
+            'page',
+            $this->_helper->isEnablePageSitemap(),
+            'Pages',
+            $this->getPageCollection()
+        );
+        $htmlSitemap .= $this->renderSection(
+            'product',
+            $this->_helper->isEnableProductSitemap(),
+            'Products',
+            $this->getProductCollection()
+        );
+        $htmlSitemap .= $this->renderSection(
+            'link',
+            $this->_helper->isEnableAddLinksSitemap(),
+            'Additional links',
+            $this->getAdditionLinksCollection()
+        );
 
         return $htmlSitemap;
     }
