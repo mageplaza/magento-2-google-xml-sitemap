@@ -249,11 +249,6 @@ class Sitemap extends CoreSitemap
             $this->_createSitemapIndex();
         }
 
-        // Push sitemap to robots.txt
-        if ($this->_isEnabledSubmissionRobots()) {
-            $this->_addSitemapToRobotsTxt($this->getSitemapFilename());
-        }
-
         $this->setSitemapTime($this->_dateModel->gmtDate('Y-m-d H:i:s'));
         $this->save();
 
@@ -299,7 +294,7 @@ class Sitemap extends CoreSitemap
             // Add Images to sitemap
             foreach ($images->getCollection() as $image) {
                 $row .= '<image:image>';
-                $row .= '<image:loc>' . htmlspecialchars($this->_getMediaUrl($image->getUrl())) . '</image:loc>';
+                $row .= '<image:loc>' . htmlspecialchars($image->getUrl()) . '</image:loc>';
                 $row .= '<image:title>' . htmlspecialchars($images->getTitle()) . '</image:title>';
                 if ($image->getCaption()) {
                     $row .= '<image:caption>' . htmlspecialchars($image->getCaption()) . '</image:caption>';
@@ -309,7 +304,7 @@ class Sitemap extends CoreSitemap
             // Add PageMap image for Google web search
             $row .= '<PageMap xmlns="http://www.google.com/schemas/sitemap-pagemap/1.0"><DataObject type="thumbnail">';
             $row .= '<Attribute name="name" value="' . htmlspecialchars($images->getTitle()) . '"/>';
-            $row .= '<Attribute name="src" value="' . htmlspecialchars($this->_getMediaUrl($images->getThumbnail()))
+            $row .= '<Attribute name="src" value="' . htmlspecialchars($images->getThumbnail())
                     . '"/>';
             $row .= '</DataObject></PageMap>';
         }
