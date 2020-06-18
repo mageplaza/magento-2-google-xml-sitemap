@@ -25,6 +25,7 @@ use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Setup\CategorySetupFactory;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+use Magento\Eav\Model\Entity\Attribute\Source\Boolean;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -57,7 +58,7 @@ class InstallData implements InstallDataInterface
         CategorySetupFactory $categorySetupFactory
     ) {
         $this->categorySetupFactory = $categorySetupFactory;
-        $this->eavSetupFactory = $eavSetupFactory;
+        $this->eavSetupFactory      = $eavSetupFactory;
     }
 
     /**
@@ -81,7 +82,7 @@ class InstallData implements InstallDataInterface
             'note'                    => 'Added by Mageplaza Sitemap',
             'input'                   => 'select',
             'class'                   => '',
-            'source'                  => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
+            'source'                  => Boolean::class,
             'global'                  => ScopedAttributeInterface::SCOPE_GLOBAL,
             'visible'                 => true,
             'required'                => false,
@@ -108,7 +109,7 @@ class InstallData implements InstallDataInterface
             'type'       => 'int',
             'label'      => '',
             'input'      => 'select',
-            'source'     => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
+            'source'     => Boolean::class,
             'required'   => false,
             'sort_order' => 100,
             'global'     => ScopedAttributeInterface::SCOPE_STORE,

@@ -53,7 +53,7 @@ class Index extends Action
      */
     public function __construct(Context $context, PageFactory $pageFactory, HelperConfig $helperConfig)
     {
-        $this->pageFactory = $pageFactory;
+        $this->pageFactory  = $pageFactory;
         $this->helperConfig = $helperConfig;
 
         return parent::__construct($context);

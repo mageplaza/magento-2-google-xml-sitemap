@@ -139,6 +139,7 @@
                 </field>
                 <field id="priority" translate="label comment" type="text" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Priority</label>
+                    <validate>validate-number validate-digits-range digits-range-0-1</validate>
                     <depends>
                         <field id="enable_add_link">1</field>
                     </depends>

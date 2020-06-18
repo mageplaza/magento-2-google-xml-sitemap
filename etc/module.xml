@@ -26,6 +26,7 @@
             <module name="Mageplaza_Core"/>
             <module name="Mageplaza_Seo"/>
             <module name="Magento_Backend"/>
+            <module name="Magento_Sitemap"/>
         </sequence>
     </module>
 </config>

@@ -128,11 +128,11 @@ class Sitemap extends CoreSitemap
         AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->helperConfig = $helperConfig;
-        $this->_coreProductFactory = $coreProductFactory;
-        $this->_corePageFactory = $corePageFactory;
+        $this->helperConfig         = $helperConfig;
+        $this->_coreProductFactory  = $coreProductFactory;
+        $this->_corePageFactory     = $corePageFactory;
         $this->_coreCategoryFactory = $coreCategoryFactory;
-        $this->stockItem = $stockItem;
+        $this->stockItem            = $stockItem;
 
         parent::__construct(
             $context,
@@ -159,9 +159,9 @@ class Sitemap extends CoreSitemap
     public function _initSitemapItems()
     {
         parent::_initSitemapItems();
-        $helper = $this->_sitemapData;
-        $storeId = $this->getStoreId();
-        $this->_sitemapItems = null;
+        $helper                = $this->_sitemapData;
+        $storeId               = $this->getStoreId();
+        $this->_sitemapItems   = null;
         $this->_sitemapItems[] = new DataObject(
             [
                 'changefreq' => $helper->getCategoryChangefreq($storeId),
@@ -212,8 +212,8 @@ class Sitemap extends CoreSitemap
         /** @var $sitemapItem DataObject */
         foreach ($this->_sitemapItems as $item) {
             $changefreq = $item->getChangefreq();
-            $priority = $item->getPriority();
-            $urlType = $item->getUrlType();
+            $priority   = $item->getPriority();
+            $urlType    = $item->getUrlType();
             foreach ($item->getCollection() as $itemChild) {
                 $xml = $this->getSitemapRow(
                     $itemChild->getUrl(),
@@ -239,19 +239,14 @@ class Sitemap extends CoreSitemap
 
         if ($this->_sitemapIncrement == 1) {
             // In case when only one increment file was created use it as default sitemap
-            $path = rtrim($this->getSitemapPath(), '/') . '/'
-                    . $this->_getCurrentSitemapFilename($this->_sitemapIncrement);
+            $path        = rtrim($this->getSitemapPath(), '/') . '/'
+                . $this->_getCurrentSitemapFilename($this->_sitemapIncrement);
             $destination = rtrim($this->getSitemapPath(), '/') . '/' . $this->getSitemapFilename();
 
             $this->_directory->renameFile($path, $destination);
         } else {
             // Otherwise create index file with list of generated sitemaps
             $this->_createSitemapIndex();
-        }
-
-        // Push sitemap to robots.txt
-        if ($this->_isEnabledSubmissionRobots()) {
-            $this->_addSitemapToRobotsTxt($this->getSitemapFilename());
         }
 
         $this->setSitemapTime($this->_dateModel->gmtDate('Y-m-d H:i:s'));
@@ -299,7 +294,7 @@ class Sitemap extends CoreSitemap
             // Add Images to sitemap
             foreach ($images->getCollection() as $image) {
                 $row .= '<image:image>';
-                $row .= '<image:loc>' . htmlspecialchars($this->_getMediaUrl($image->getUrl())) . '</image:loc>';
+                $row .= '<image:loc>' . htmlspecialchars($image->getUrl()) . '</image:loc>';
                 $row .= '<image:title>' . htmlspecialchars($images->getTitle()) . '</image:title>';
                 if ($image->getCaption()) {
                     $row .= '<image:caption>' . htmlspecialchars($image->getCaption()) . '</image:caption>';
@@ -309,8 +304,8 @@ class Sitemap extends CoreSitemap
             // Add PageMap image for Google web search
             $row .= '<PageMap xmlns="http://www.google.com/schemas/sitemap-pagemap/1.0"><DataObject type="thumbnail">';
             $row .= '<Attribute name="name" value="' . htmlspecialchars($images->getTitle()) . '"/>';
-            $row .= '<Attribute name="src" value="' . htmlspecialchars($this->_getMediaUrl($images->getThumbnail()))
-                    . '"/>';
+            $row .= '<Attribute name="src" value="' . htmlspecialchars($images->getThumbnail())
+                . '"/>';
             $row .= '</DataObject></PageMap>';
         }
 
@@ -326,11 +321,11 @@ class Sitemap extends CoreSitemap
      */
     public function getLinkCollectionAdded($storeId)
     {
-        $id = 1;
+        $id         = 1;
         $collection = [];
         foreach ($this->helperConfig->getXmlAdditionalLinks($storeId) as $item) {
             if ($item !== null) {
-                $obj = ObjectManager::getInstance()->create(\Magento\Framework\DataObject::class);
+                $obj = ObjectManager::getInstance()->create(DataObject::class);
                 $obj->setData('id', $id++);
                 $obj->setData('url', $item);
                 $obj->setData('updated_at', $this->getSitemapTime());
@@ -434,6 +429,6 @@ class Sitemap extends CoreSitemap
     public function optimizeHomepage($storeId, $page)
     {
         return $this->helperConfig->isEnableHomepageOptimization($storeId) == 1
-               && $this->helperConfig->getConfigValue(self::HOMEPAGE_PATH, $storeId) == $page->getUrl();
+            && $this->helperConfig->getConfigValue(self::HOMEPAGE_PATH, $storeId) == $page->getUrl();
     }
 }

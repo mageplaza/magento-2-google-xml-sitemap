@@ -114,15 +114,15 @@ class Sitemap extends Template
         ProductCollection $productCollection,
         PageCollection $pageCollection
     ) {
-        $this->collection = $collection;
-        $this->_categoryHelper = $categoryHelper;
+        $this->collection          = $collection;
+        $this->_categoryHelper     = $categoryHelper;
         $this->_categoryCollection = $categoryCollection;
-        $this->categoryRepository = $categoryRepository;
-        $this->_helper = $helper;
-        $this->_stockFilter = $stockFilter;
-        $this->productVisibility = $productVisibility;
-        $this->productCollection = $productCollection;
-        $this->pageCollection = $pageCollection;
+        $this->categoryRepository  = $categoryRepository;
+        $this->_helper             = $helper;
+        $this->_stockFilter        = $stockFilter;
+        $this->productVisibility   = $productVisibility;
+        $this->productCollection   = $productCollection;
+        $this->pageCollection      = $pageCollection;
 
         parent::__construct($context);
     }
@@ -133,7 +133,7 @@ class Sitemap extends Template
      */
     public function getProductCollection()
     {
-        $limit = $this->_helper->getProductLimit() ?: self::DEFAULT_PRODUCT_LIMIT;
+        $limit      = $this->_helper->getProductLimit() ?: self::DEFAULT_PRODUCT_LIMIT;
         $collection = $this->productCollection
             ->setVisibility($this->productVisibility->getVisibleInCatalogIds())
             ->addMinimalPrice()
@@ -198,7 +198,7 @@ class Sitemap extends Template
     public function getAdditionLinksCollection()
     {
         $additionLinks = $this->_helper->getAdditionalLinks();
-        $allLink = explode("\n", $additionLinks);
+        $allLink       = explode("\n", $additionLinks);
 
         $result = [];
         foreach ($allLink as $link) {
