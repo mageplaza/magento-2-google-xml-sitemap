@@ -141,7 +141,7 @@ class Sitemap extends Template
             ->addTaxPercents()
             ->setPageSize($limit)
             ->addAttributeToSelect('*');
-        if (!$this->_helper->getConfigValue('cataloginventory\options\show_out_of_stock')) {
+        if (!$this->_helper->getConfigValue('cataloginventory/options/show_out_of_stock')) {
             $this->_stockFilter->addInStockFilterToCollection($collection);
         }
 
