@@ -411,10 +411,9 @@ class Sitemap extends CoreSitemap
      */
     public function convertUrl($url)
     {
-        if (preg_match(self::PATTERN, $url)) {
+        if (preg_match(self::PATTERN, $url) || strpos($url, 'http://') !== false || strpos($url, 'https://') !== false) {
             return $url;
         }
-
         return 'http://' . $url;
     }
 
