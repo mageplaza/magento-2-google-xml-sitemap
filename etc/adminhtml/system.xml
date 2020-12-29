@@ -28,7 +28,10 @@
                 <field id="enable" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable HTML Sitemap</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Default URL: http://your-domain.com/sitemap/; See <a href="https://www.mageplaza.com/magento-2-seo-extension/html-xml-sitemap.html" target="_blank">this article</a> ]]></comment>
+                    <comment><![CDATA[Select <b>Yes</b> to enable this module.<br />
+                    Default URL: http://your-domain.com/sitemap/; See <a href="https://www.mageplaza.com/magento-2-seo-extension/html-xml-sitemap.html" target="_blank">this article</a> <br />
+                        1. It helps to reduce abandonment cart with <a href="https://www.mageplaza.com/magento-2-one-step-checkout-extension/" target="_blank">One Step Checkout</a>. <br />
+                        2. <a href="https://pages.mageplaza.com/abandoned-cart-email-templates-for-magento/?utm_source=configuration&utm_campaign=m2-emailattachment" target="_blank">How to setup abandoned cart email series</a>]]></comment>
                 </field>
                 <field id="category" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable Categories Sitemap</label>
