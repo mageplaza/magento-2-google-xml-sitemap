@@ -180,7 +180,6 @@ class Sitemap extends Template
         $pageCollection = $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
             ->addStoreFilter($this->_storeManager->getStore());
 
-
         if ($this->_helper->isEnableExcludePage() && !empty($excludePages)) {
             $pageCollection->addFieldToFilter('identifier', [
                 'nin' => $this->getExcludedPages()
