@@ -141,7 +141,9 @@ class Sitemap extends Template
             ->addTaxPercents()
             ->setPageSize($limit)
             ->addAttributeToSelect('*');
-        $this->_stockFilter->addInStockFilterToCollection($collection);
+        if (!$this->_helper->getConfigValue('cataloginventory/options/show_out_of_stock')) {
+            $this->_stockFilter->addInStockFilterToCollection($collection);
+        }
 
         return $collection;
     }
@@ -168,15 +170,23 @@ class Sitemap extends Template
 
     /**
      * Get page collection
-     * @return mixed
+     *
+     * @return PageCollection
+     * @throws NoSuchEntityException
      */
     public function getPageCollection()
     {
-        return $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
-            ->addStoreFilter($this->_storeManager->getStore())
-            ->addFieldToFilter('identifier', [
+        $excludePages   = $this->_helper->getExcludePageListing();
+        $pageCollection = $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
+            ->addStoreFilter($this->_storeManager->getStore());
+
+        if ($this->_helper->isEnableExcludePage() && !empty($excludePages)) {
+            $pageCollection->addFieldToFilter('identifier', [
                 'nin' => $this->getExcludedPages()
             ]);
+        }
+
+        return $pageCollection;
     }
 
     /**
@@ -185,11 +195,7 @@ class Sitemap extends Template
      */
     public function getExcludedPages()
     {
-        if ($this->_helper->isEnableExcludePage()) {
-            return explode(',', $this->_helper->getExcludePageListing());
-        }
-
-        return ['home', 'no-route'];
+        return explode(',', $this->_helper->getExcludePageListing());
     }
 
     /**
