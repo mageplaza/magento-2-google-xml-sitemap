@@ -51,7 +51,11 @@ class Page
      */
     public function toOptionArray()
     {
-        $options = [];
+        $options[] = [
+            'value' => '',
+            'label' => __('-- Please select --')
+        ];
+
         /** @var Collection $collection */
         $collection = $this->_pageCollectionFactory->create();
         foreach ($collection as $item) {
