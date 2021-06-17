@@ -393,9 +393,7 @@ class Sitemap extends CoreSitemap
             if ($this->_coreProductFactory->create()->load($item->getId())->getData('mp_exclude_sitemap') == 1) {
                 continue;
             }
-            if ($this->stockItem->load($item->getId(), 'product_id')->getIsInStock() == 0) {
-                continue;
-            }
+
             $collection[] = $item;
         }
 
