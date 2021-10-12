@@ -284,25 +284,25 @@ class Sitemap extends Template
         $htmlSitemap .= $this->renderSection(
             'category',
             $this->_helper->isEnableCategorySitemap(),
-            'Categories',
+            __('Categories'),
             $this->getCategoryCollection()
         );
         $htmlSitemap .= $this->renderSection(
             'page',
             $this->_helper->isEnablePageSitemap(),
-            'Pages',
+            __('Pages'),
             $this->getPageCollection()
         );
         $htmlSitemap .= $this->renderSection(
             'product',
             $this->_helper->isEnableProductSitemap(),
-            'Products',
+            __('Products'),
             $this->getProductCollection()
         );
         $htmlSitemap .= $this->renderSection(
             'link',
             $this->_helper->isEnableAddLinksSitemap(),
-            'Additional links',
+            __('Additional links'),
             $this->getAdditionLinksCollection()
         );
 
