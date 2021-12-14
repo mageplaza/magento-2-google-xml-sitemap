@@ -57,7 +57,8 @@ class Page
         ];
 
         /** @var Collection $collection */
-        $collection = $this->_pageCollectionFactory->create();
+        $collection = $this->_pageCollectionFactory->create()->addFieldToFilter('is_active', 1);
+
         foreach ($collection as $item) {
             $options[] = ['value' => $item->getIdentifier(), 'label' => $item->getTitle()];
         }

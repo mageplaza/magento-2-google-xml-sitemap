@@ -21,7 +21,6 @@
 
 namespace Mageplaza\Sitemap\Model;
 
-use Exception;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogInventory\Model\Stock\Item;
@@ -31,7 +30,10 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\DataObject;
 use Magento\Framework\Escaper;
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
@@ -45,6 +47,7 @@ use Magento\Sitemap\Model\ResourceModel\Cms\PageFactory as CmsPageFactory;
 use Magento\Sitemap\Model\Sitemap as CoreSitemap;
 use Magento\Store\Model\StoreManagerInterface;
 use Mageplaza\Sitemap\Helper\Data as HelperConfig;
+use Zend_Db_Statement_Exception;
 
 /**
  * Class Sitemap
@@ -202,16 +205,17 @@ class Sitemap extends CoreSitemap
     }
 
     /**
-     * @return $this
-     * @throws Exception
+     * @return $this|CoreSitemap
      * @throws LocalizedException
+     * @throws FileSystemException
+     * @throws ValidatorException
      */
     public function generateXml()
     {
         $this->_initSitemapItems();
         /** @var $sitemapItem DataObject */
         foreach ($this->_sitemapItems as $item) {
-            $changefreq = $item->getChangefreq();
+            $changeFreq = $item->getChangefreq();
             $priority   = $item->getPriority();
             $urlType    = $item->getUrlType();
             foreach ($item->getCollection() as $itemChild) {
@@ -219,7 +223,7 @@ class Sitemap extends CoreSitemap
                     $itemChild->getUrl(),
                     $urlType,
                     $itemChild->getUpdatedAt(),
-                    $changefreq,
+                    $changeFreq,
                     $priority,
                     $itemChild->getImages()
                 );
@@ -258,10 +262,10 @@ class Sitemap extends CoreSitemap
     /**
      * Get site map row
      *
-     * @param $url
-     * @param $urlType
-     * @param null $lastmod
-     * @param null $changefreq
+     * @param string $url
+     * @param int $urlType
+     * @param null $lastMod
+     * @param null $changeFreq
      * @param null $priority
      * @param null $images
      *
@@ -270,8 +274,8 @@ class Sitemap extends CoreSitemap
     protected function getSitemapRow(
         $url,
         $urlType,
-        $lastmod = null,
-        $changefreq = null,
+        $lastMod = null,
+        $changeFreq = null,
         $priority = null,
         $images = null
     ) {
@@ -281,11 +285,11 @@ class Sitemap extends CoreSitemap
             $url = $this->convertUrl($url);
         }
         $row = '<loc>' . htmlspecialchars($url) . '</loc>';
-        if ($lastmod) {
-            $row .= '<lastmod>' . $this->_getFormattedLastmodDate($lastmod) . '</lastmod>';
+        if ($lastMod) {
+            $row .= '<lastmod>' . $this->_getFormattedLastmodDate($lastMod) . '</lastmod>';
         }
-        if ($changefreq) {
-            $row .= '<changefreq>' . $changefreq . '</changefreq>';
+        if ($changeFreq) {
+            $row .= '<changefreq>' . $changeFreq . '</changefreq>';
         }
         if ($priority) {
             $row .= sprintf('<priority>%.1f</priority>', $priority);
@@ -315,7 +319,7 @@ class Sitemap extends CoreSitemap
     /**
      * Get link collection added by config Additional Links
      *
-     * @param $storeId
+     * @param int $storeId
      *
      * @return array
      */
@@ -339,7 +343,7 @@ class Sitemap extends CoreSitemap
     /**
      * Get category collection
      *
-     * @param $storeId
+     * @param int $storeId
      *
      * @return array
      */
@@ -360,7 +364,7 @@ class Sitemap extends CoreSitemap
     /**
      * Get page collection
      *
-     * @param $storeId
+     * @param int $storeId
      *
      * @return array
      */
@@ -382,7 +386,7 @@ class Sitemap extends CoreSitemap
     /**
      * Get product Collection
      *
-     * @param $storeId
+     * @param int $storeId
      *
      * @return array
      */
@@ -405,25 +409,24 @@ class Sitemap extends CoreSitemap
     /**
      * Convert Url
      *
-     * @param $url
+     * @param string $url
      *
      * @return string
      */
     public function convertUrl($url)
     {
-        if (preg_match(self::PATTERN, $url)
-            || strpos($url, 'http://') !== false
-            || strpos($url, 'https://') !== false) {
+        if (preg_match('@^http://@i', $url) || preg_match('@^https://@i', $url)) {
             return $url;
         }
+
         return 'http://' . $url;
     }
 
     /**
      * Remove the link of the CMS page using for homepage.
      *
-     * @param $storeId
-     * @param $page
+     * @param int $storeId
+     * @param Object $page
      *
      * @return bool
      */
