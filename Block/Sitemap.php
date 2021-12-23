@@ -257,7 +257,7 @@ class Sitemap extends Template
                     switch ($section) {
                         case 'category':
                             $category = $this->categoryRepository->get($item->getId());
-                            if ($category->getData('mp_exclude_sitemap') === '0') {
+                            if (!$category->getData('mp_exclude_sitemap')) {
                                 $html .= $this->renderLinkElement(
                                     $this->getCategoryUrl($item->getId()),
                                     $item->getName()
@@ -272,8 +272,7 @@ class Sitemap extends Template
                             $html .= $this->renderLinkElement($this->getUrl($item->getIdentifier()), $item->getTitle());
                             break;
                         case 'product':
-                            if ($item->getData('mp_exclude_sitemap')
-                                || $item->getData('mp_exclude_sitemap') === null) {
+                            if ($item->getData('mp_exclude_sitemap')) {
                                 continue 2;
                             }
                             $html .= $this->renderLinkElement($this->getUrl($item->getProductUrl()), $item->getName());
