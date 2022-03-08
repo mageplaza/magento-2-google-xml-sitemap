@@ -21,7 +21,6 @@
 
 namespace Mageplaza\Sitemap\Model;
 
-use Exception;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogInventory\Model\Stock\Item;

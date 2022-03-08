@@ -30,6 +30,7 @@ use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\CatalogInventory\Helper\Stock;
 use Magento\Cms\Model\Page;
 use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
+use Magento\Framework\Data\Tree\Node\Collection as TreeCollection;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
@@ -129,6 +130,7 @@ class Sitemap extends Template
 
     /**
      * Get product collection
+     *
      * @return mixed
      */
     public function getProductCollection()
@@ -150,7 +152,8 @@ class Sitemap extends Template
 
     /**
      * Get category collection
-     * @return \Magento\Framework\Data\Tree\Node\Collection
+     *
+     * @return TreeCollection
      */
     public function getCategoryCollection()
     {
@@ -158,7 +161,7 @@ class Sitemap extends Template
     }
 
     /**
-     * @param $categoryId
+     * @param int $categoryId
      *
      * @return string
      * @throws NoSuchEntityException
@@ -178,7 +181,7 @@ class Sitemap extends Template
     {
         $excludePages   = $this->_helper->getExcludePageListing();
         $pageCollection = $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
-            ->addStoreFilter($this->_storeManager->getStore());
+            ->addStoreFilter($this->_storeManager->getStore()->getId());
 
         if ($this->_helper->isEnableExcludePage() && !empty($excludePages)) {
             $pageCollection->addFieldToFilter('identifier', [
@@ -191,6 +194,7 @@ class Sitemap extends Template
 
     /**
      * Get excluded pages
+     *
      * @return array
      */
     public function getExcludedPages()
@@ -200,6 +204,7 @@ class Sitemap extends Template
 
     /**
      * Get addition link collection
+     *
      * @return mixed
      */
     public function getAdditionLinksCollection()
@@ -220,8 +225,8 @@ class Sitemap extends Template
     /**
      * Render link element
      *
-     * @param $link
-     * @param $title
+     * @param string $link
+     * @param string $title
      *
      * @return string
      */
@@ -230,11 +235,12 @@ class Sitemap extends Template
         return '<li><a href="' . $link . '">' . __($title) . '</a></li>';
     }
 
+    // phpcs:disable Generic.Metrics.NestingLevel
     /**
-     * @param $section
-     * @param $config
-     * @param $title
-     * @param $collection
+     * @param string $section
+     * @param bool $config
+     * @param string $title
+     * @param Object $collection
      *
      * @return string
      * @throws NoSuchEntityException
@@ -250,15 +256,25 @@ class Sitemap extends Template
                 foreach ($collection as $key => $item) {
                     switch ($section) {
                         case 'category':
-                            $html .= $this->renderLinkElement($this->getCategoryUrl($item->getId()), $item->getName());
+                            $category = $this->categoryRepository->get($item->getId());
+                            if (!$category->getData('mp_exclude_sitemap')) {
+                                $html .= $this->renderLinkElement(
+                                    $this->getCategoryUrl($item->getId()),
+                                    $item->getName()
+                                );
+                            }
                             break;
                         case 'page':
-                            if (in_array($item->getIdentifier(), $this->getExcludedPages())) {
+                            if (in_array($item->getIdentifier(), $this->getExcludedPages())
+                                || $item->getData('mp_exclude_sitemap')) {
                                 continue 2;
                             }
                             $html .= $this->renderLinkElement($this->getUrl($item->getIdentifier()), $item->getTitle());
                             break;
                         case 'product':
+                            if ($item->getData('mp_exclude_sitemap')) {
+                                continue 2;
+                            }
                             $html .= $this->renderLinkElement($this->getUrl($item->getProductUrl()), $item->getName());
                             break;
                         case 'link':
@@ -311,6 +327,7 @@ class Sitemap extends Template
 
     /**
      * Is enable html site map
+     *
      * @return mixed
      */
     public function isEnableHtmlSitemap()

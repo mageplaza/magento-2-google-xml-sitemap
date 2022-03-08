@@ -19,9 +19,11 @@
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
-/** @var \Mageplaza\Sitemap\Block\Sitemap $block */
+use Mageplaza\Sitemap\Block\Sitemap;
+
+/** @var Sitemap $block */
 ?>
-<?php if (!$block->isEnableHtmlSitemap()): ?>
+<?php if (!$block->isEnableHtmlSitemap()) : ?>
     <style type="text/css">
         .footer.links a[href*="sitemap"] {
             display: none;
