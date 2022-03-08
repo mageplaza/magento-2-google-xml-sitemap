@@ -24,7 +24,7 @@
     <fieldset name="search_engine_optimization">
         <field name="mp_exclude_sitemap">
             <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Magento\Eav\Model\Entity\Attribute\Source\Boolean</item>
+                <item name="options" xsi:type="object">Mageplaza\Sitemap\Model\Source\Boolean</item>
                 <item name="config" xsi:type="array">
                     <item name="sortOrder" xsi:type="number">300</item>
                     <item name="dataType" xsi:type="string">string</item>
