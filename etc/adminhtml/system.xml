@@ -42,7 +42,7 @@
                     <comment>
                         <![CDATA[
                           Display Category Pages in HTML Sitemap except those with the above selected string. Separated by a line break.
-                        E.g: Do not display with the category pages including /men/ such as:
+                        <br/>E.g: Do not display with the category pages including /men/ such as:
                         /men/top
                         /men/top/t-shirt
                         /clothes/men/
