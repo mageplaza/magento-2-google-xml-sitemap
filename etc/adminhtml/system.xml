@@ -42,10 +42,10 @@
                     <comment>
                         <![CDATA[
                           Display Category Pages in HTML Sitemap except those with the above selected string. Separated by a line break.
-                        <br/>E.g: Do not display with the category pages including /men/ such as:
-                        /men/top
-                        /men/top/t-shirt
-                        /clothes/men/
+                        <br/>E.g: Do not display with the category pages including /men/ such as: </br>
+                        /men/top</br>
+                        /men/top/t-shirt</br>
+                        /clothes/men/</br>
                         Support Regular expression
                          ]]>
                     </comment>
