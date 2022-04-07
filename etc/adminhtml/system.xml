@@ -41,7 +41,7 @@
                     <label>Exclude Category Page</label>
                     <comment>
                         <![CDATA[
-                          Display Category Page pages in HTML SiteMap except those with the above string selected. Separated by a line break.
+                          Display Category Pages in HTML Sitemap except those with the above selected string. Separated by a line break.
                         E.g: Do not display with the category pages including /men/ such as:
                         /men/top
                         /men/top/t-shirt
@@ -57,6 +57,7 @@
                 <field id="display_type" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Display Style</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\DisplayType</source_model>
+                    <comment>Choose style to display categories in HTML Sitemap.</comment>
                     <depends>
                         <field id="enable">1</field>
                         <field id="category">1</field>
@@ -73,7 +74,7 @@
                     <label>Sort Products in HTML Sitemap by</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\SortProduct</source_model>
                     <depends>
-                        <field id="enable">1</field>
+                        <field id="product">1</field>
                     </depends>
                     <comment>Choose how to arrange and display products in HTML Site Map.</comment>
                 </field>
@@ -81,7 +82,7 @@
                     <label>Default Sort Direction</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\SortDirection</source_model>
                     <depends>
-                        <field id="enable">1</field>
+                        <field id="product">1</field>
                     </depends>
                 </field>
                 <field id="out_of_stock_products" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
@@ -89,7 +90,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>If yes, will hide out of stock products in HTML Site Map.</comment>
                     <depends>
-                        <field id="enable">1</field>
+                        <field id="product">1</field>
                     </depends>
                 </field>
                 <field id="product_limit" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
