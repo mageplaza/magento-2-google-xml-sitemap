@@ -183,7 +183,7 @@ class Sitemap extends Template
             ->addFieldToFilter('entity_id', ['in' => $storeRootCategory->getAllChildren(true)])
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('include_in_menu', 1)
-            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]])->setOrder('path');
+            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]]);
 
         $excludeCategories = $this->_helper->getHtmlSitemapConfig('category_page');
         if (!empty($excludeCategories)) {
@@ -192,36 +192,80 @@ class Sitemap extends Template
                 $excludeCategories
             ));
 
+            $allExcludeIds = '';
             foreach ($excludeCategories as $excludeCategory) {
                 try {
                     $testRegex = preg_match($excludeCategory, '');
                     if ($testRegex) {
-                        $excludeCategoriesIds = $this->filterCategoryWithRegex($excludeCategory);
-                        if (count($excludeCategoriesIds)) {
-                            $categoryCollection->addFieldToFilter('entity_id', ['nin' => $excludeCategoriesIds]);
-                        }
+                        $allExcludeIds .= '-' . $this->filterCategoryWithRegex($excludeCategory);
+                    } else {
+                        $excludePath = $this->getExcludePath($excludeCategory);
+                        $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
                     }
                 } catch (Exception $e) {
                     $excludePath = $this->getExcludePath($excludeCategory);
-                    $categoryCollection->addFieldToFilter('url_path', ['nlike' => '%' . $excludePath . '%']);
+                    $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
                 }
+            }
+
+            $excludeIds = explode('-', $allExcludeIds);
+            $categoryCollection->addFieldToFilter('entity_id', ['nin' => $excludeIds]);
+        }
+
+        return $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->addFieldToFilter('entity_id', ['in' => $categoryCollection->getAllIds()])->setOrder('path');
+    }
+
+    /**
+     * @param $path
+     * @param $categoryCollection
+     *
+     * @return string
+     */
+    protected function filterCategoryWithPath($path, $categoryCollection)
+    {
+        $excludeIds = [];
+        foreach ($categoryCollection as $category) {
+            if ($this->isExcludeCategory($category, $path)) {
+                $excludeIds[] = $category->getData('entity_id');
             }
         }
 
-        return $categoryCollection;
+        return implode('-', $excludeIds);
+    }
+
+    /**
+     * @param $category
+     * @param $path
+     *
+     * @return bool
+     */
+    public function isExcludeCategory($category, $path)
+    {
+        $filterPath = explode('/', $path);
+        $categoryPath = $category->getUrlPath();
+        $categoryPath = explode('/', $categoryPath);
+
+        foreach ($filterPath as $pathInfo) {
+            if (!in_array($pathInfo, $categoryPath)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
      * @param $regex
      *
-     * @return array
+     * @return string
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
     protected function filterCategoryWithRegex($regex)
     {
         $excludeCategoriesIds = [];
-        $categoryCollection   = $this->_categoryCollection->create()->addAttributeToSelect('*')
+        $categoryCollection = $this->_categoryCollection->create()->addAttributeToSelect('*')
             ->setStoreId($this->_storeManager->getStore()->getId());
         foreach ($categoryCollection as $category) {
             if (!preg_match($regex, $category->getUrlPath())) {
@@ -229,7 +273,7 @@ class Sitemap extends Template
             }
         }
 
-        return $excludeCategoriesIds;
+        return implode('-', $excludeCategoriesIds);
     }
 
     /**
