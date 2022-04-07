@@ -177,11 +177,13 @@ class Sitemap extends Template
      */
     public function getCategoryCollection()
     {
+        $storeRootCategoryId = $this->_storeManager->getStore()->getRootCategoryId();
+        $storeRootCategory = $this->categoryRepository->get($storeRootCategoryId);
         $categoryCollection = $this->_categoryCollection->create()->addAttributeToSelect('*')
-            ->setStoreId($this->_storeManager->getStore()->getId())
+            ->addFieldToFilter('entity_id', ['in' => $storeRootCategory->getAllChildren(true)])
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('include_in_menu', 1)
-            ->addFieldToFilter('entity_id', ['nin' => [1, 2]])->setOrder('path');
+            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]])->setOrder('path');
 
         $excludeCategories = $this->_helper->getHtmlSitemapConfig('category_page');
         if (!empty($excludeCategories)) {
@@ -196,7 +198,7 @@ class Sitemap extends Template
                     if ($testRegex) {
                         $excludeCategoriesIds = $this->filterCategoryWithRegex($excludeCategory);
                         if (count($excludeCategoriesIds)) {
-                            $categoryCollection->addFieldToFilter('entiry_id', ['nin' => $excludeCategoriesIds]);
+                            $categoryCollection->addFieldToFilter('entity_id', ['nin' => $excludeCategoriesIds]);
                         }
                     }
                 } catch (Exception $e) {
