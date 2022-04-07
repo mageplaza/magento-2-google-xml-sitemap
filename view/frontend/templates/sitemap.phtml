@@ -38,7 +38,7 @@ use Mageplaza\Sitemap\Block\Sitemap;
                 var elementClass = $(this).attr('class'),
                     level, margin;
                 if (elementClass.trim()) {
-                    level  = (elementClass.slice(-1) - 1) * 5;
+                    level  = (elementClass.slice(-1) - 2) * 5;
                     margin = level + '%';
                     $(this).css('margin-left', margin);
                 }

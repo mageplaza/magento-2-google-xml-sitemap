@@ -21,6 +21,7 @@
 
 namespace Mageplaza\Sitemap\Block;
 
+use Exception;
 use Magento\Catalog\Helper\Category;
 use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
@@ -143,10 +144,9 @@ class Sitemap extends Template
             ->addMinimalPrice()
             ->addFinalPrice()
             ->addTaxPercents()
-            ->setPageSize($limit)
             ->addAttributeToSelect('*');
 
-        $sortProductBy = $this->_helper->getHtmlSitemapConfig('product_sorting');
+        $sortProductBy  = $this->_helper->getHtmlSitemapConfig('product_sorting');
         $sortProductDir = $this->_helper->getHtmlSitemapConfig('product_sorting_dir');
 
         switch ($sortProductBy) {
@@ -154,7 +154,7 @@ class Sitemap extends Template
                 $collection->setOrder('name', $sortProductDir);
                 break;
             case SortProduct::PRICE:
-                $collection->setOrder('price', $sortProductDir);
+                $collection->setOrder('minimal_price', $sortProductDir);
                 break;
             default:
                 $collection->setOrder('entity_id', $sortProductDir);
@@ -164,6 +164,8 @@ class Sitemap extends Template
         if (!$this->_helper->getHtmlSitemapConfig('out_of_stock_products')) {
             $this->_stockFilter->addInStockFilterToCollection($collection);
         }
+
+        $collection->setPageSize($limit);
 
         return $collection;
     }
@@ -180,7 +182,8 @@ class Sitemap extends Template
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('include_in_menu', 1)
             ->addFieldToFilter('entity_id', ['nin' => [1, 2]])->setOrder('path');
-        $excludeCategories  = $this->_helper->getHtmlSitemapConfig('category_page');
+
+        $excludeCategories = $this->_helper->getHtmlSitemapConfig('category_page');
         if (!empty($excludeCategories)) {
             $excludeCategories = array_map('trim', explode(
                 "\n",
@@ -188,11 +191,60 @@ class Sitemap extends Template
             ));
 
             foreach ($excludeCategories as $excludeCategory) {
-                $categoryCollection->addFieldToFilter('url_path', ['nlike' => $excludeCategory . '%']);
+                try {
+                    $testRegex = preg_match($excludeCategory, '');
+                    if ($testRegex) {
+                        $excludeCategoriesIds = $this->filterCategoryWithRegex($excludeCategory);
+                        if (count($excludeCategoriesIds)) {
+                            $categoryCollection->addFieldToFilter('entiry_id', ['nin' => $excludeCategoriesIds]);
+                        }
+                    }
+                } catch (Exception $e) {
+                    $excludePath = $this->getExcludePath($excludeCategory);
+                    $categoryCollection->addFieldToFilter('url_path', ['nlike' => '%' . $excludePath . '%']);
+                }
             }
         }
 
         return $categoryCollection;
+    }
+
+    /**
+     * @param $regex
+     *
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    protected function filterCategoryWithRegex($regex)
+    {
+        $excludeCategoriesIds = [];
+        $categoryCollection = $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->setStoreId($this->_storeManager->getStore()->getId());
+        foreach ($categoryCollection as $category) {
+            if (!preg_match($regex, $category->getUrlPath())) {
+                $excludeCategoriesIds[] = $category->getId();
+            }
+        }
+
+        return $excludeCategoriesIds;
+    }
+
+    /**
+     * @param $excludeCategory
+     *
+     * @return string
+     */
+    protected function getExcludePath($excludeCategory)
+    {
+        if ($excludeCategory[0] == '/') {
+            $excludeCategory = substr($excludeCategory, 1);
+        }
+        if ($excludeCategory[-1] == '/') {
+            $excludeCategory = substr($excludeCategory, 0, -1);
+        }
+
+        return $excludeCategory;
     }
 
     /**
