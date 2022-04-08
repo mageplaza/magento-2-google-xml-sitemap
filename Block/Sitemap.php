@@ -194,17 +194,19 @@ class Sitemap extends Template
 
             $allExcludeIds = '';
             foreach ($excludeCategories as $excludeCategory) {
-                try {
-                    $testRegex = preg_match($excludeCategory, '');
-                    if ($testRegex) {
-                        $allExcludeIds .= '-' . $this->filterCategoryWithRegex($excludeCategory);
-                    } else {
+                if (!empty($excludeCategory)) {
+                    try {
+                        $testRegex = preg_match($excludeCategory, '');
+                        if ($testRegex) {
+                            $allExcludeIds .= '-' . $this->filterCategoryWithRegex($excludeCategory);
+                        } else {
+                            $excludePath = $this->getExcludePath($excludeCategory);
+                            $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
+                        }
+                    } catch (Exception $e) {
                         $excludePath = $this->getExcludePath($excludeCategory);
                         $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
                     }
-                } catch (Exception $e) {
-                    $excludePath = $this->getExcludePath($excludeCategory);
-                    $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
                 }
             }
 
