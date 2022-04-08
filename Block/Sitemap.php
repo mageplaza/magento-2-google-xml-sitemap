@@ -161,7 +161,7 @@ class Sitemap extends Template
                 break;
         }
 
-        if (!$this->_helper->getHtmlSitemapConfig('out_of_stock_products')) {
+        if ($this->_helper->getHtmlSitemapConfig('out_of_stock_products')) {
             $this->_stockFilter->addInStockFilterToCollection($collection);
         }
 
