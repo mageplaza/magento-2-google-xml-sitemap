@@ -25,6 +25,11 @@
         <seo>
             <html_sitemap>
                 <enable>1</enable>
+                <category>0</category>
+                <display_type>list</display_type>
+                <product_sorting>product_ids</product_sorting>
+                <product_sorting_dir>asc</product_sorting_dir>
+                <out_of_stock_products>1</out_of_stock_products>
             </html_sitemap>
             <xml_sitemap>
                 <homepage_optimization>1</homepage_optimization>

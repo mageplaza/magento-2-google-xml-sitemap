@@ -21,20 +21,23 @@
 
 namespace Mageplaza\Sitemap\Block;
 
+use Exception;
 use Magento\Catalog\Helper\Category;
 use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollection;
 use Magento\CatalogInventory\Helper\Stock;
 use Magento\Cms\Model\Page;
 use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
-use Magento\Framework\Data\Tree\Node\Collection as TreeCollection;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Mageplaza\Sitemap\Helper\Data as HelperConfig;
+use Mageplaza\Sitemap\Model\Source\SortProduct;
 
 /**
  * Class Sitemap
@@ -136,28 +139,160 @@ class Sitemap extends Template
     public function getProductCollection()
     {
         $limit      = $this->_helper->getProductLimit() ?: self::DEFAULT_PRODUCT_LIMIT;
-        $collection = $this->productCollection
+        $collection = $this->productCollection->create()
             ->setVisibility($this->productVisibility->getVisibleInCatalogIds())
             ->addMinimalPrice()
             ->addFinalPrice()
             ->addTaxPercents()
-            ->setPageSize($limit)
             ->addAttributeToSelect('*');
-        if (!$this->_helper->getConfigValue('cataloginventory/options/show_out_of_stock')) {
+
+        $sortProductBy  = $this->_helper->getHtmlSitemapConfig('product_sorting');
+        $sortProductDir = $this->_helper->getHtmlSitemapConfig('product_sorting_dir');
+
+        switch ($sortProductBy) {
+            case SortProduct::PRODUCT_NAME:
+                $collection->setOrder('name', $sortProductDir);
+                break;
+            case SortProduct::PRICE:
+                $collection->setOrder('minimal_price', $sortProductDir);
+                break;
+            default:
+                $collection->setOrder('entity_id', $sortProductDir);
+                break;
+        }
+
+        if ($this->_helper->getHtmlSitemapConfig('out_of_stock_products')) {
             $this->_stockFilter->addInStockFilterToCollection($collection);
         }
+
+        $collection->setPageSize($limit);
 
         return $collection;
     }
 
     /**
-     * Get category collection
-     *
-     * @return TreeCollection
+     * @return Collection|AbstractDb
+     * @throws NoSuchEntityException
+     * @throws LocalizedException
      */
     public function getCategoryCollection()
     {
-        return $this->_categoryHelper->getStoreCategories(false, true);
+        $storeRootCategoryId = $this->_storeManager->getStore()->getRootCategoryId();
+        $storeRootCategory = $this->categoryRepository->get($storeRootCategoryId);
+        $categoryCollection = $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->addFieldToFilter('entity_id', ['in' => $storeRootCategory->getAllChildren(true)])
+            ->addFieldToFilter('is_active', 1)
+            ->addFieldToFilter('include_in_menu', 1)
+            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]]);
+
+        $excludeCategories = $this->_helper->getHtmlSitemapConfig('category_page');
+        if (!empty($excludeCategories)) {
+            $excludeCategories = array_map('trim', explode(
+                "\n",
+                $excludeCategories
+            ));
+
+            $allExcludeIds = '';
+            foreach ($excludeCategories as $excludeCategory) {
+                if (!empty($excludeCategory)) {
+                    try {
+                        $testRegex = preg_match($excludeCategory, '');
+                        if ($testRegex) {
+                            $allExcludeIds .= '-' . $this->filterCategoryWithRegex($excludeCategory);
+                        } else {
+                            $excludePath = $this->getExcludePath($excludeCategory);
+                            $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
+                        }
+                    } catch (Exception $e) {
+                        $excludePath = $this->getExcludePath($excludeCategory);
+                        $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
+                    }
+                }
+            }
+
+            $excludeIds = explode('-', $allExcludeIds);
+            $categoryCollection->addFieldToFilter('entity_id', ['nin' => $excludeIds]);
+        }
+
+        return $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->addFieldToFilter('entity_id', ['in' => $categoryCollection->getAllIds()])->setOrder('path');
+    }
+
+    /**
+     * @param $path
+     * @param $categoryCollection
+     *
+     * @return string
+     */
+    protected function filterCategoryWithPath($path, $categoryCollection)
+    {
+        $excludeIds = [];
+        foreach ($categoryCollection as $category) {
+            if ($this->isExcludeCategory($category, $path)) {
+                $excludeIds[] = $category->getData('entity_id');
+            }
+        }
+
+        return implode('-', $excludeIds);
+    }
+
+    /**
+     * @param $category
+     * @param $path
+     *
+     * @return bool
+     */
+    public function isExcludeCategory($category, $path)
+    {
+        $filterPath = explode('/', $path);
+        $categoryPath = $category->getUrlPath();
+        $categoryPath = explode('/', $categoryPath);
+
+        foreach ($filterPath as $pathInfo) {
+            if (!in_array($pathInfo, $categoryPath)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $regex
+     *
+     * @return string
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    protected function filterCategoryWithRegex($regex)
+    {
+        $excludeCategoriesIds = [];
+        $categoryCollection = $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->setStoreId($this->_storeManager->getStore()->getId());
+        foreach ($categoryCollection as $category) {
+            if (!preg_match($regex, $category->getUrlPath())) {
+                $excludeCategoriesIds[] = $category->getId();
+            }
+        }
+
+        return implode('-', $excludeCategoriesIds);
+    }
+
+    /**
+     * @param $excludeCategory
+     *
+     * @return string
+     */
+    protected function getExcludePath($excludeCategory)
+    {
+        if ($excludeCategory[0] == '/') {
+            $excludeCategory = substr($excludeCategory, 1);
+        }
+        if ($excludeCategory[-1] == '/') {
+            $excludeCategory = substr($excludeCategory, 0, -1);
+        }
+
+        return $excludeCategory;
     }
 
     /**
@@ -223,16 +358,15 @@ class Sitemap extends Template
     }
 
     /**
-     * Render link element
-     *
-     * @param string $link
-     * @param string $title
+     * @param $link
+     * @param $title
+     * @param $level
      *
      * @return string
      */
-    public function renderLinkElement($link, $title)
+    public function renderLinkElement($link, $title, $level = null)
     {
-        return '<li><a href="' . $link . '">' . __($title) . '</a></li>';
+        return '<li><a class="level-' . $level . '" href="' . $link . '">' . __($title) . '</a></li>';
     }
 
     // phpcs:disable Generic.Metrics.NestingLevel
@@ -260,7 +394,8 @@ class Sitemap extends Template
                             if (!$category->getData('mp_exclude_sitemap')) {
                                 $html .= $this->renderLinkElement(
                                     $this->getCategoryUrl($item->getId()),
-                                    $item->getName()
+                                    $item->getName(),
+                                    $item->getLevel()
                                 );
                             }
                             break;
@@ -333,5 +468,13 @@ class Sitemap extends Template
     public function isEnableHtmlSitemap()
     {
         return $this->_helper->isEnableHtmlSiteMap();
+    }
+
+    /**
+     * @return array|bool|mixed
+     */
+    public function getCategoryDisplayType()
+    {
+        return $this->_helper->getHtmlSitemapConfig('display_type');
     }
 }

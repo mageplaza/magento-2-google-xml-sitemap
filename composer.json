@@ -2,11 +2,11 @@
   "name": "mageplaza/module-sitemap",
   "description": "Magento 2 Google XML Sitemap extension",
   "require": {
-    "mageplaza/module-core": "^1.4.5",
-    "mageplaza/magento-2-seo-extension": "^2.1.0"
+    "mageplaza/module-core": "^1.4.12",
+    "mageplaza/magento-2-seo-extension": "^2.3.0"
   },
   "type": "magento2-module",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "license": "proprietary",
   "authors": [
     {

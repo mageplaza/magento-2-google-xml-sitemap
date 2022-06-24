@@ -25,26 +25,75 @@
         <section id="seo" translate="label" type="text" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1">
             <group id="html_sitemap" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>HTML Sitemap</label>
-                <field id="enable" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable HTML Sitemap</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Default URL: http://your-domain.com/sitemap/; See <a href="https://www.mageplaza.com/magento-2-seo-extension/html-xml-sitemap.html" target="_blank">this article</a> ]]></comment>
                 </field>
-                <field id="category" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="category" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable Categories Sitemap</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
                 </field>
-                <field id="product" translate="label" type="select" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="category_page" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Exclude Category Page</label>
+                    <comment>
+                        <![CDATA[
+                          Display Category Pages in HTML Sitemap except those with the above selected string. Separated by a line break.
+                        <br/>E.g: Do not display with the category pages including /men/ such as: </br>
+                        /men/top</br>
+                        /men/top/t-shirt</br>
+                        /clothes/men/</br>
+                        Support Regular expression
+                         ]]>
+                    </comment>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="category">1</field>
+                    </depends>
+                </field>
+                <field id="display_type" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Display Style</label>
+                    <source_model>Mageplaza\Sitemap\Model\Source\DisplayType</source_model>
+                    <comment>Choose style to display categories in HTML Sitemap.</comment>
+                    <depends>
+                        <field id="enable">1</field>
+                        <field id="category">1</field>
+                    </depends>
+                </field>
+                <field id="product" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable Products Sitemap</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
                 </field>
-                <field id="product_limit" translate="label comment" type="text" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="product_sorting" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sort Products in HTML Sitemap by</label>
+                    <source_model>Mageplaza\Sitemap\Model\Source\SortProduct</source_model>
+                    <depends>
+                        <field id="product">1</field>
+                    </depends>
+                    <comment>Choose how to arrange and display products in HTML Site Map.</comment>
+                </field>
+                <field id="product_sorting_dir" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Default Sort Direction</label>
+                    <source_model>Mageplaza\Sitemap\Model\Source\SortDirection</source_model>
+                    <depends>
+                        <field id="product">1</field>
+                    </depends>
+                </field>
+                <field id="out_of_stock_products" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Hide Out Of Stock Products</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>If yes, will hide out of stock products in HTML Site Map.</comment>
+                    <depends>
+                        <field id="product">1</field>
+                    </depends>
+                </field>
+                <field id="product_limit" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Limit Product Sitemap</label>
                     <validate>validate-digits validate-not-negative-number</validate>
                     <comment><![CDATA[Default is 100]]></comment>
@@ -53,7 +102,7 @@
                         <field id="product">1</field>
                     </depends>
                 </field>
-                <field id="page" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="page" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable Pages Sitemap</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
