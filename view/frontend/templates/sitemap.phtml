@@ -19,10 +19,30 @@
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
-/** @var \Mageplaza\Sitemap\Block\Sitemap $block */
+use Mageplaza\Sitemap\Block\Sitemap;
+
+/** @var Sitemap $block */
 ?>
 
 <div id="mageplaza-seo-html-sitemap">
     <?= $block->renderHtmlSiteMap() ?>
 </div>
-
+<?php
+    if ($block->getCategoryDisplayType() == 'dropdown') :
+?>
+    <script>
+        require([
+            'jquery'
+        ], function ($) {
+            $('.mp-sitemap-listing a').each(function () {
+                var elementClass = $(this).attr('class'),
+                    level, margin;
+                if (elementClass.trim()) {
+                    level  = (elementClass.slice(-1) - 2) * 5;
+                    margin = level + '%';
+                    $(this).css('margin-left', margin);
+                }
+            })
+        });
+    </script>
+<?php endif ?>
