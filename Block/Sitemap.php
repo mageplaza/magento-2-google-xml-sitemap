@@ -334,7 +334,7 @@ class Sitemap extends Template
      */
     public function getExcludedPages()
     {
-        return explode(',', $this->_helper->getExcludePageListing());
+        return explode(',', (string) $this->_helper->getExcludePageListing());
     }
 
     /**
