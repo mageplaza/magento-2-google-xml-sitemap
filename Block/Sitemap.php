@@ -345,11 +345,11 @@ class Sitemap extends Template
     public function getAdditionLinksCollection()
     {
         $additionLinks = $this->_helper->getAdditionalLinks();
-        $allLink       = explode("\n", $additionLinks);
+        $allLink       = explode("\n", (string) $additionLinks);
 
         $result = [];
         foreach ($allLink as $link) {
-            if (count($component = explode(',', $link)) > 1) {
+            if (count($component = explode(',', (string) $link)) > 1) {
                 $result[$component[0]] = $component[1];
             }
         }
