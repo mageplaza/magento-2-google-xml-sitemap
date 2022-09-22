@@ -318,7 +318,7 @@ class Sitemap extends Template
         $pageCollection = $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
             ->addStoreFilter($this->_storeManager->getStore()->getId());
 
-        if ($this->_helper->isEnableExcludePage() && !empty($excludePages)) {
+        if (!empty($excludePages)) {
             $pageCollection->addFieldToFilter('identifier', [
                 'nin' => $this->getExcludedPages()
             ]);
@@ -438,12 +438,14 @@ class Sitemap extends Template
             'Categories',
             $this->getCategoryCollection()
         );
-        $htmlSitemap .= $this->renderSection(
-            'page',
-            $this->_helper->isEnablePageSitemap(),
-            'Pages',
-            $this->getPageCollection()
-        );
+        if ($this->_helper->isEnableExcludePage()) {
+            $htmlSitemap .= $this->renderSection(
+                'page',
+                $this->_helper->isEnablePageSitemap(),
+                'Pages',
+                $this->getPageCollection()
+            );
+        }
         $htmlSitemap .= $this->renderSection(
             'product',
             $this->_helper->isEnableProductSitemap(),
