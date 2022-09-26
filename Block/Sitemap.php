@@ -318,7 +318,7 @@ class Sitemap extends Template
         $pageCollection = $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
             ->addStoreFilter($this->_storeManager->getStore()->getId());
 
-        if (!empty($excludePages)) {
+        if ($this->_helper->isEnableExcludePage() && !empty($excludePages)) {
             $pageCollection->addFieldToFilter('identifier', [
                 'nin' => $this->getExcludedPages()
             ]);
@@ -334,6 +334,9 @@ class Sitemap extends Template
      */
     public function getExcludedPages()
     {
+        if (!$this->_helper->isEnableExcludePage()) {
+            return [];
+        }
         return explode(',', (string) $this->_helper->getExcludePageListing());
     }
 
@@ -438,14 +441,12 @@ class Sitemap extends Template
             'Categories',
             $this->getCategoryCollection()
         );
-        if ($this->_helper->isEnableExcludePage()) {
-            $htmlSitemap .= $this->renderSection(
-                'page',
-                $this->_helper->isEnablePageSitemap(),
-                'Pages',
-                $this->getPageCollection()
-            );
-        }
+        $htmlSitemap .= $this->renderSection(
+            'page',
+            $this->_helper->isEnablePageSitemap(),
+            'Pages',
+            $this->getPageCollection()
+        );
         $htmlSitemap .= $this->renderSection(
             'product',
             $this->_helper->isEnableProductSitemap(),
