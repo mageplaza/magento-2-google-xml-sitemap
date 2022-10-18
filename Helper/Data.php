@@ -172,7 +172,7 @@ class Data extends AbstractHelper
      */
     public function getXmlAdditionalLinks($storeId = null)
     {
-        return explode("\n", $this->getXmlSitemapConfig('additional_links', $storeId));
+        return explode("\n", (string) $this->getXmlSitemapConfig('additional_links', $storeId));
     }
 
     /**
