@@ -190,7 +190,7 @@ class Sitemap extends Template
             $excludeCategories = array_map('trim', explode(
                 "\n",
                 $excludeCategories
-            ));
+                ?? ''));
 
             $allExcludeIds = '';
             foreach ($excludeCategories as $excludeCategory) {
@@ -210,7 +210,7 @@ class Sitemap extends Template
                 }
             }
 
-            $excludeIds = explode('-', $allExcludeIds);
+            $excludeIds = explode('-', $allExcludeIds ?? '');
             $categoryCollection->addFieldToFilter('entity_id', ['nin' => $excludeIds]);
         }
 
@@ -244,9 +244,9 @@ class Sitemap extends Template
      */
     public function isExcludeCategory($category, $path)
     {
-        $filterPath = explode('/', $path);
+        $filterPath = explode('/', $path ?? '');
         $categoryPath = $category->getUrlPath();
-        $categoryPath = explode('/', $categoryPath);
+        $categoryPath = explode('/', $categoryPath ?? '');
 
         foreach ($filterPath as $pathInfo) {
             if (!in_array($pathInfo, $categoryPath)) {
