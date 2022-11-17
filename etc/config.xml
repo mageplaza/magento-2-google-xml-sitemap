@@ -34,6 +34,9 @@
             <xml_sitemap>
                 <homepage_optimization>1</homepage_optimization>
                 <frequency>daily</frequency>
+                <error_enabled>0</error_enabled>
+                <sender>general</sender>
+                <email_template>seo_xml_sitemap_email_template</email_template>
             </xml_sitemap>
         </seo>
     </default>

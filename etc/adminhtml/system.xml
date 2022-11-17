@@ -197,6 +197,25 @@
                     </depends>
                     <comment><![CDATA[From 0 to 1. E.g: 0.5 or 0.8]]></comment>
                 </field>
+                <field id="error_enabled" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Email Notification when Generate Error</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Send email to your email addresses if any error. To avoid going to spambox, you should install <a href="https://www.mageplaza.com/magento-2-smtp/" target="_blank">SMTP</a>]]></comment>
+                </field>
+                <field id="sender" translate="label comment" type="select" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sender Email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                    <comment>Select a sender email for notification emails.</comment>
+                </field>
+                <field id="email_template" translate="label comment" type="select" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email Template When Generate Error</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
+                <field id="send_to" translate="label comment" type="text" sortOrder="33" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send To</label>
+                    <backend_model>Mageplaza\Sitemap\Model\Backend\Email</backend_model>
+                    <comment>Separated by comma (,)</comment>
+                </field>
             </group>
         </section>
     </system>

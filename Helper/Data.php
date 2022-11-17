@@ -21,6 +21,15 @@
 
 namespace Mageplaza\Sitemap\Helper;
 
+use Magento\Backend\Model\UrlInterface;
+use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use Magento\Framework\App\Area;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\MailException;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Mageplaza\Seo\Helper\Data as AbstractHelper;
 
 /**
@@ -31,6 +40,30 @@ class Data extends AbstractHelper
 {
     const HTML_SITEMAP_CONFIGUARATION = 'html_sitemap/';
     const XML_SITEMAP_CONFIGUARATION  = 'xml_sitemap/';
+
+    /**
+     * @var TransportBuilder
+     */
+    protected $transportBuilder;
+
+    /**
+     * @var UrlInterface
+     */
+    protected $backendUrl;
+
+    public function __construct(
+        Context $context,
+        ObjectManagerInterface $objectManager,
+        StoreManagerInterface $storeManager,
+        StockItemRepository $stockItemRepository,
+        TransportBuilder $transportBuilder,
+        UrlInterface $backendUrl
+    ) {
+        $this->transportBuilder = $transportBuilder;
+        $this->backendUrl       = $backendUrl;
+
+        parent::__construct($context, $objectManager, $storeManager, $stockItemRepository);
+    }
 
     /************************ HTML Sitemap Configuration *************************
      * Is enable html site map
@@ -193,5 +226,41 @@ class Data extends AbstractHelper
     public function getPriority($storeId = null)
     {
         return $this->getXmlSitemapConfig('priority', $storeId);
+    }
+
+    /**
+     * @param $sendTo
+     * @param $fileName
+     * @param $emailTemplate
+     * @param $storeId
+     *
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function sendMail($sendTo, $fileName, $emailTemplate, $storeId)
+    {
+        $siteMapUrl = $this->backendUrl->getRouteUrl('admin/sitemap/index');
+        try {
+            $this->transportBuilder
+                ->setTemplateIdentifier($emailTemplate)
+                ->setTemplateOptions([
+                    'area'  => Area::AREA_FRONTEND,
+                    'store' => $storeId,
+                ])
+                ->setTemplateVars([
+                    'viewSitemapUrl' => $siteMapUrl,
+                    'file_name'      => $fileName
+                ])
+                ->setFrom($this->getXmlSitemapConfig('sender'))
+                ->addTo($sendTo);
+            $transport = $this->transportBuilder->getTransport();
+            $transport->sendMessage();
+
+            return true;
+        } catch (MailException $e) {
+            $this->_logger->critical($e->getLogMessage());
+        }
+
+        return false;
     }
 }
