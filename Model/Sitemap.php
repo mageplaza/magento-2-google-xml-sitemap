@@ -279,11 +279,7 @@ class Sitemap extends CoreSitemap
         $priority = null,
         $images = null
     ) {
-        if ($urlType == self::URL) {
-            $url = $this->_getUrl($url);
-        } else {
-            $url = $this->convertUrl($url);
-        }
+        $url = $this->convertUrlCollection($urlType, $url);
         $row = '<loc>' . htmlspecialchars($url) . '</loc>';
         if ($lastMod) {
             $row .= '<lastmod>' . $this->_getFormattedLastmodDate($lastMod) . '</lastmod>';
@@ -350,11 +346,32 @@ class Sitemap extends CoreSitemap
     public function _getCategoryCollection($storeId)
     {
         $collection = [];
-
         foreach ($this->_categoryFactory->create()->getCollection($storeId) as $item) {
-            if ($this->_coreCategoryFactory->create()->load($item->getId())->getData('mp_exclude_sitemap') == 1) {
-                continue;
+            $category = $this->_coreCategoryFactory->create()->load($item->getId());
+            $baseUrl  = $this->convertUrlCollection(self::URL, $item->getUrl());
+            if ($category->getData('mp_sitemap_active_config') == 1) {
+                $excludeLinkConfig = 'mp_' . $this->helperConfig->getXmlSitemapConfig('exclude_links');
+                if ($excludeLinkConfig && strpos($excludeLinkConfig, $baseUrl) === true) {
+                    continue;
+                }
+                $excludeCategoryConfig = explode('/', $this->helperConfig->getXmlSitemapConfig('exclude_category_page') ?? '');
+                if ($excludeCategoryConfig) {
+                    $match = '';
+                    foreach ($excludeCategoryConfig as $url) {
+                        if ($url != '' && strpos($baseUrl, $url) === true) {
+                            $match = $url;
+                        }
+                    }
+                    if ($match) {
+                        continue;
+                    }
+                }
+            } else {
+                if ($category->getData('mp_exclude_sitemap') == 1) {
+                    continue;
+                }
             }
+
             $collection[] = $item;
         }
 
@@ -370,12 +387,23 @@ class Sitemap extends CoreSitemap
      */
     public function _getPageCollection($storeId)
     {
-        $collection = [];
+        $collection        = [];
+        $excludePageConfig = explode(',', $this->helperConfig->getXmlSitemapConfig('exclude_page_sitemap') ?? '');
+        $excludeLinkConfig = 'mp_' . $this->helperConfig->getXmlSitemapConfig('exclude_links');
         foreach ($this->_cmsFactory->create()->getCollection($storeId) as $item) {
-            if ($this->_corePageFactory->create()->load($item->getId())->getData('mp_exclude_sitemap') == 1
-                || $this->optimizeHomepage($storeId, $item)
+            $pageData = $this->_corePageFactory->create()->load($item->getId());
+            $baseUrl  = $this->convertUrlCollection(self::URL, $item->getUrl());
+            if ($pageData->getData('mp_sitemap_active_config') == 1
+                && (in_array($item->getUrl(), $excludePageConfig)
+                    || ($excludeLinkConfig && strpos($excludeLinkConfig, $baseUrl) === true))
             ) {
                 continue;
+            } else {
+                if ($pageData->getData('mp_exclude_sitemap') == 1
+                    || $this->optimizeHomepage($storeId, $item)
+                ) {
+                    continue;
+                }
             }
             $collection[] = $item;
         }
@@ -395,10 +423,25 @@ class Sitemap extends CoreSitemap
      */
     public function _getProductCollection($storeId)
     {
-        $collection = [];
-        foreach ($this->_productFactory->create()->getCollection($storeId) as $item) {
-            if ($this->_coreProductFactory->create()->load($item->getId())->getData('mp_exclude_sitemap') == 1) {
+        $collection         = [];
+        $ProductCollections = $this->_productFactory->create()->getCollection($storeId);
+        $productTypeConfig  = explode(',', $this->helperConfig->getXmlSitemapConfig('exclude_product_type') ?? '');
+        $urlsConfig         = $this->helperConfig->getXmlSitemapConfig('exclude_product_page');
+        $excludeLinkConfig  = 'mp_' . $this->helperConfig->getXmlSitemapConfig('exclude_links');
+        foreach ($ProductCollections as $item) {
+            $product = $this->_coreProductFactory->create()->load($item->getId());
+            $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
+
+            if ($product->getData('mp_sitemap_active_config') == 1
+                && (in_array($product->getTypeId(), $productTypeConfig)
+                    || ($excludeLinkConfig && strpos($excludeLinkConfig, $baseUrl) === true)
+                    || ($urlsConfig && strpos($urlsConfig, $product->getUrlKey()) === true))
+            ) {
                 continue;
+            } else {
+                if ($product->getData('mp_exclude_sitemap') == 1) {
+                    continue;
+                }
             }
 
             $collection[] = $item;
@@ -435,5 +478,20 @@ class Sitemap extends CoreSitemap
     {
         return $this->helperConfig->isEnableHomepageOptimization($storeId) == 1
             && $this->helperConfig->getConfigValue(self::HOMEPAGE_PATH, $storeId) == $page->getUrl();
+    }
+
+    /**
+     * @param $urlType
+     * @param $url
+     * @return string
+     */
+    public function convertUrlCollection($urlType, $url) {
+        if ($urlType == self::URL) {
+            $url = $this->_getUrl($url);
+        } else {
+            $url = $this->convertUrl($url);
+        }
+
+        return $url;
     }
 }

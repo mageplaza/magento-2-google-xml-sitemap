@@ -1,0 +1,8 @@
+{
+    "cms_page": {
+        "column": {
+            "mp_exclude_sitemap": true,
+            "mp_sitemap_active_config": true
+        }
+    }
+}

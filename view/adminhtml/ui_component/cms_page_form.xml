@@ -34,5 +34,29 @@
                 </item>
             </argument>
         </field>
+        <field name="mp_sitemap_active_config" sortOrder="301" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <exports>
+                    <link name="checked">ns = ${ $.ns }, index = mp_exclude_sitemap :disabled</link>
+                </exports>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <description translate="true">Use Config Settings</description>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
     </fieldset>
 </form>

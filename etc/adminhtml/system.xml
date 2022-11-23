@@ -197,10 +197,46 @@
                     </depends>
                     <comment><![CDATA[From 0 to 1. E.g: 0.5 or 0.8]]></comment>
                 </field>
+                <field id="exclude_links" translate="label" type="textarea" sortOrder="24" showInDefault="1" canRestore="1">
+                    <label>Exclude Links</label>
+                    <comment>Open link per line.</comment>
+                </field>
+                <field id="description" translate="label" type="textarea" sortOrder="25" showInDefault="1" canRestore="1">
+                    <label>XML Sitemap Description</label>
+                </field>
+                <field id="exclude_product_type" translate="label" type="multiselect" sortOrder="26" showInDefault="1" canRestore="1">
+                    <label>Exclude Products Types Sitemap</label>
+                    <source_model>Mageplaza\Sitemap\Model\Source\Type</source_model>
+                </field>
+                <field id="exclude_product_page" translate="label" type="textarea" sortOrder="27" showInDefault="1" canRestore="1">
+                    <label>Exclude Product Page</label>
+                    <comment>
+                        <![CDATA[Display Product Pages in XML Sitemap except those with the above selected string. Separated by a line break.<br />
+                        E.g: Do not display with the product pages like:<br />
+                        /fusion-backpack<br />
+                        /ajax-full-zip-sweatshirt<br />
+                        Support Regular expression]]>
+                    </comment>
+                </field>
+                <field id="exclude_category_page" translate="label" type="textarea" sortOrder="28" showInDefault="1" canRestore="1">
+                    <label>Exclude Category Page</label>
+                    <comment>
+                        <![CDATA[Display Category Pages in XML Sitemap except those with the above selected string. Separated by a line break.<br/>
+                        E.g: Do not display with the category pages including /men/ such as:<br/>
+                        /men/top<br/>
+                        /men/top/t-shirt<br/>
+                        /clothes/men/<br/>
+                        Support Regular expression]]>
+                    </comment>
+                </field>
+                <field id="exclude_page_sitemap" translate="label" type="multiselect" sortOrder="29" showInDefault="1" canRestore="1">
+                    <label>Exclude Pages Sitemap</label>
+                    <source_model>Mageplaza\Sitemap\Model\Source\Page</source_model>
+                </field>
                 <field id="error_enabled" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enable Email Notification when Generate Error</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Send email to your email addresses if any error. To avoid going to spambox, you should install <a href="https://www.mageplaza.com/magento-2-smtp/" target="_blank">SMTP</a>]]></comment>
+                    <comment>If yes, will send an email when generating XML Sitemap fails.</comment>
                 </field>
                 <field id="sender" translate="label comment" type="select" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Sender Email</label>

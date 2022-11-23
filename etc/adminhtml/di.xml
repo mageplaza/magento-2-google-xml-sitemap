@@ -25,4 +25,14 @@
         <plugin name="mp_sitemap_generate_after" type="Mageplaza\Sitemap\Plugin\Controller\Adminhtml\Generate"/>
     </type>
     <preference for="Magento\Sitemap\Controller\Adminhtml\Sitemap\Index" type="Mageplaza\Sitemap\Controller\Adminhtml\Sitemap\Index" />
+    <virtualType name="Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Pool">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <item name="mp_sitemap_use_config_settings" xsi:type="array">
+                    <item name="class" xsi:type="string">Mageplaza\Sitemap\Ui\DataProvider\Product\Modifier\UseConfigSettings</item>
+                    <item name="sortOrder" xsi:type="number">20</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
 </config>
