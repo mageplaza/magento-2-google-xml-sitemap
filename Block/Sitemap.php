@@ -334,7 +334,7 @@ class Sitemap extends Template
      */
     public function getExcludedPages()
     {
-        return explode(',', $this->_helper->getExcludePageListing());
+        return explode(',', $this->_helper->getExcludePageListing() ?? "");
     }
 
     /**
@@ -345,7 +345,7 @@ class Sitemap extends Template
     public function getAdditionLinksCollection()
     {
         $additionLinks = $this->_helper->getAdditionalLinks();
-        $allLink       = explode("\n", $additionLinks);
+        $allLink       = explode("\n", $additionLinks ?? "");
 
         $result = [];
         foreach ($allLink as $link) {
