@@ -197,18 +197,18 @@
                     </depends>
                     <comment><![CDATA[From 0 to 1. E.g: 0.5 or 0.8]]></comment>
                 </field>
-                <field id="exclude_links" translate="label" type="textarea" sortOrder="24" showInDefault="1" canRestore="1">
+                <field id="exclude_links" translate="label" type="textarea" sortOrder="24" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exclude Links</label>
                     <comment>Open link per line.</comment>
                 </field>
-                <field id="description" translate="label" type="textarea" sortOrder="25" showInDefault="1" canRestore="1">
+                <field id="description" translate="label" type="textarea" sortOrder="25" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>XML Sitemap Description</label>
                 </field>
-                <field id="exclude_product_type" translate="label" type="multiselect" sortOrder="26" showInDefault="1" canRestore="1">
+                <field id="exclude_product_type" translate="label" type="multiselect" sortOrder="26" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exclude Products Types Sitemap</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\Type</source_model>
                 </field>
-                <field id="exclude_product_page" translate="label" type="textarea" sortOrder="27" showInDefault="1" canRestore="1">
+                <field id="exclude_product_page" translate="label" type="textarea" sortOrder="27" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exclude Product Page</label>
                     <comment>
                         <![CDATA[Display Product Pages in XML Sitemap except those with the above selected string. Separated by a line break.<br />
@@ -218,7 +218,7 @@
                         Support Regular expression]]>
                     </comment>
                 </field>
-                <field id="exclude_category_page" translate="label" type="textarea" sortOrder="28" showInDefault="1" canRestore="1">
+                <field id="exclude_category_page" translate="label" type="textarea" sortOrder="28" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exclude Category Page</label>
                     <comment>
                         <![CDATA[Display Category Pages in XML Sitemap except those with the above selected string. Separated by a line break.<br/>
@@ -229,7 +229,7 @@
                         Support Regular expression]]>
                     </comment>
                 </field>
-                <field id="exclude_page_sitemap" translate="label" type="multiselect" sortOrder="29" showInDefault="1" canRestore="1">
+                <field id="exclude_page_sitemap" translate="label" type="multiselect" sortOrder="29" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exclude Pages Sitemap</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\Page</source_model>
                 </field>
@@ -241,15 +241,23 @@
                 <field id="sender" translate="label comment" type="select" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Sender Email</label>
                     <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
-                    <comment>Select a sender email for notification emails.</comment>
+                    <depends>
+                        <field id="error_enabled">1</field>
+                    </depends>
                 </field>
                 <field id="email_template" translate="label comment" type="select" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Email Template When Generate Error</label>
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <depends>
+                        <field id="error_enabled">1</field>
+                    </depends>
                 </field>
-                <field id="send_to" translate="label comment" type="text" sortOrder="33" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="send_to" translate="label comment" type="textarea" sortOrder="33" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Send To</label>
                     <backend_model>Mageplaza\Sitemap\Model\Backend\Email</backend_model>
+                    <depends>
+                        <field id="error_enabled">1</field>
+                    </depends>
                     <comment>Separated by comma (,)</comment>
                 </field>
             </group>
