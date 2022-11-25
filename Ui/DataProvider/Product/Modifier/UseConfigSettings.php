@@ -97,11 +97,10 @@ class UseConfigSettings extends AbstractModifier
                         'data' => [
                             'config' => [
                                 'dataScope'         => static::IS_ACTIVE,
-                                'additionalClasses' => 'admin__field-x-small enab',
                                 'component'         => 'Mageplaza_Sitemap/js/product/use-config-settings',
-                                'componentType'     => Field::NAME,
+                                'dataType'          => 'boolean',
                                 'default'           => '1',
-                                'prefer'            => 'toggle',
+                                'description'       => 'Use Config Settings',
                                 'valueMap'          => [
                                     'false' => '0',
                                     'true'  => '1',

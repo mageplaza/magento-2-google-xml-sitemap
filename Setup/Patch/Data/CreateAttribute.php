@@ -36,8 +36,8 @@ use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 use Mageplaza\Sitemap\Model\Source\Boolean as MpBoolean;
 
 /**
-* Patch is mechanism, that allows to do atomic upgrade data changes
-*/
+ * Patch is mechanism, that allows to do atomic upgrade data changes
+ */
 class CreateAttribute implements
     DataPatchInterface,
     PatchRevertableInterface
@@ -121,6 +121,7 @@ class CreateAttribute implements
             'label'                   => '',
             'input'                   => 'select',
             'class'                   => '',
+            'description'             => 'Use Config Settings',
             'source'                  => Boolean::class,
             'global'                  => ScopedAttributeInterface::SCOPE_GLOBAL,
             'visible'                 => true,
