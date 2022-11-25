@@ -27,10 +27,10 @@
     <tr>
         <td valign="top">
             <p>
-                <H2>{{trans "XML Sitemap Generation Error"}}</H2><br/>
-                <span>{{trans "An error occurred while generating the sitemap %fileName file. Please double check your information " fileName=$file_name}}
-                <a href="{{var viewSitemapUrl|raw}}">{{trans "here"}}.</a>
-                </span>&nbsp;
+            <H2>{{trans "XML Sitemap Generation Error"}}</H2><br/>
+            <span>{{trans "An error occurred while generating the sitemap %fileName file. Please double check your information " fileName=$file_name}}
+                {{trans '<a href="%viewSitemapUrl"> here</a>.' viewSitemapUrl=$this.getUrl($store,'admin/admin/sitemap/index',[_nosid:1]) |raw}}
+                </span>
             </p>
         </td>
     </tr>
