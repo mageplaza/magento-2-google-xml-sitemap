@@ -321,14 +321,19 @@ class Sitemap extends CoreSitemap
      */
     public function getLinkCollectionAdded($storeId)
     {
-        $id         = 1;
-        $collection = [];
+        $id                = 1;
+        $collection        = [];
+        $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
         foreach ($this->helperConfig->getXmlAdditionalLinks($storeId) as $item) {
+            if ($excludeLinkConfig && str_contains($excludeLinkConfig,$item)) {
+                continue;
+            }
             if ($item !== null) {
                 $obj = ObjectManager::getInstance()->create(DataObject::class);
                 $obj->setData('id', $id++);
                 $obj->setData('url', $item);
                 $obj->setData('updated_at', $this->getSitemapTime());
+
                 $collection[] = $obj;
             }
         }
@@ -349,16 +354,19 @@ class Sitemap extends CoreSitemap
         foreach ($this->_categoryFactory->create()->getCollection($storeId) as $item) {
             $category = $this->_coreCategoryFactory->create()->load($item->getId());
             $baseUrl  = $this->convertUrlCollection(self::URL, $item->getUrl());
+            if ($category->getId() && $category->getData('mp_sitemap_active_config') == null) {
+                $category->save();
+            }
             if ($category->getData('mp_sitemap_active_config') == 1) {
-                $excludeLinkConfig = 'mp_' . $this->helperConfig->getXmlSitemapConfig('exclude_links');
-                if ($excludeLinkConfig && strpos($excludeLinkConfig, $baseUrl) === true) {
+                $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
+                if ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)) {
                     continue;
                 }
                 $excludeCategoryConfig = explode('/', $this->helperConfig->getXmlSitemapConfig('exclude_category_page') ?? '');
                 if ($excludeCategoryConfig) {
                     $match = '';
                     foreach ($excludeCategoryConfig as $url) {
-                        if ($url != '' && strpos($baseUrl, $url) === true) {
+                        if ($url != '' && str_contains($baseUrl, $url)) {
                             $match = $url;
                         }
                     }
@@ -389,13 +397,17 @@ class Sitemap extends CoreSitemap
     {
         $collection        = [];
         $excludePageConfig = explode(',', $this->helperConfig->getXmlSitemapConfig('exclude_page_sitemap') ?? '');
-        $excludeLinkConfig = 'mp_' . $this->helperConfig->getXmlSitemapConfig('exclude_links');
+        $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
         foreach ($this->_cmsFactory->create()->getCollection($storeId) as $item) {
             $pageData = $this->_corePageFactory->create()->load($item->getId());
             $baseUrl  = $this->convertUrlCollection(self::URL, $item->getUrl());
+            if ($pageData->getId() && $pageData->getData('mp_sitemap_active_config') == null) {
+                $pageData->save();
+            }
+
             if ($pageData->getData('mp_sitemap_active_config') == 1
                 && (in_array($item->getUrl(), $excludePageConfig)
-                    || ($excludeLinkConfig && strpos($excludeLinkConfig, $baseUrl) === true))
+                    || ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)))
             ) {
                 continue;
             } else {
@@ -427,15 +439,18 @@ class Sitemap extends CoreSitemap
         $ProductCollections = $this->_productFactory->create()->getCollection($storeId);
         $productTypeConfig  = explode(',', $this->helperConfig->getXmlSitemapConfig('exclude_product_type') ?? '');
         $urlsConfig         = $this->helperConfig->getXmlSitemapConfig('exclude_product_page');
-        $excludeLinkConfig  = 'mp_' . $this->helperConfig->getXmlSitemapConfig('exclude_links');
+        $excludeLinkConfig  = $this->helperConfig->getXmlSitemapConfig('exclude_links');
         foreach ($ProductCollections as $item) {
             $product = $this->_coreProductFactory->create()->load($item->getId());
             $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
+            if ($product->getId() && $product->getData('mp_sitemap_active_config') == null) {
+                $product->save();
+            }
 
             if ($product->getData('mp_sitemap_active_config') == 1
                 && (in_array($product->getTypeId(), $productTypeConfig)
-                    || ($excludeLinkConfig && strpos($excludeLinkConfig, $baseUrl) === true)
-                    || ($urlsConfig && strpos($urlsConfig, $product->getUrlKey()) === true))
+                    || ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl))
+                    || ($urlsConfig && str_contains($urlsConfig, $product->getUrlKey())))
             ) {
                 continue;
             } else {
