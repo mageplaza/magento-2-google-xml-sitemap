@@ -201,9 +201,6 @@
                     <label>Exclude Links</label>
                     <comment>Open link per line.</comment>
                 </field>
-                <field id="description" translate="label" type="textarea" sortOrder="25" showInDefault="1" showInWebsite="1" canRestore="1">
-                    <label>XML Sitemap Description</label>
-                </field>
                 <field id="exclude_product_type" translate="label" type="multiselect" sortOrder="26" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Exclude Products Types Sitemap</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\Type</source_model>
