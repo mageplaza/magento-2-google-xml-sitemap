@@ -185,6 +185,14 @@ class Sitemap extends Template
             ->addFieldToFilter('include_in_menu', 1)
             ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]]);
 
+        return $categoryCollection;
+    }
+
+    /**
+     * @param $categoryCollection
+     * @return false|string[]
+     */
+    public function getExcludeCategoryIds($categoryCollection) {
         $excludeCategories = $this->_helper->getHtmlSitemapConfig('category_page');
         if (!empty($excludeCategories)) {
             $excludeCategories = array_map('trim', explode(
@@ -211,11 +219,9 @@ class Sitemap extends Template
             }
 
             $excludeIds = explode('-', $allExcludeIds ?? '');
-            $categoryCollection->addFieldToFilter('entity_id', ['nin' => $excludeIds]);
-        }
 
-        return $this->_categoryCollection->create()->addAttributeToSelect('*')
-            ->addFieldToFilter('entity_id', ['in' => $categoryCollection->getAllIds()])->setOrder('path');
+            return $excludeIds;
+        }
     }
 
     /**
@@ -314,15 +320,8 @@ class Sitemap extends Template
      */
     public function getPageCollection()
     {
-        $excludePages   = $this->_helper->getExcludePageListing();
         $pageCollection = $this->pageCollection->addFieldToFilter('is_active', Page::STATUS_ENABLED)
             ->addStoreFilter($this->_storeManager->getStore()->getId());
-
-        if ($this->_helper->isEnableExcludePage() && !empty($excludePages)) {
-            $pageCollection->addFieldToFilter('identifier', [
-                'nin' => $this->getExcludedPages()
-            ]);
-        }
 
         return $pageCollection;
     }
@@ -393,8 +392,13 @@ class Sitemap extends Template
                 foreach ($collection as $key => $item) {
                     switch ($section) {
                         case 'category':
-                            $category = $this->categoryRepository->get($item->getId());
-                            if (!$category->getData('mp_exclude_sitemap')) {
+                            $category           = $this->categoryRepository->get($item->getId());
+                            $excludeCategoryIds = $this->getExcludeCategoryIds($collection);
+                            if (($item->getData('mp_sitemap_active_config') == 0
+                                && !$category->getData('mp_exclude_sitemap'))
+                                || ($item->getData('mp_sitemap_active_config') == 1
+                                && !in_array($item->getId(), $excludeCategoryIds))
+                            ) {
                                 $html .= $this->renderLinkElement(
                                     $this->getCategoryUrl($item->getId()),
                                     $item->getName(),
@@ -403,14 +407,20 @@ class Sitemap extends Template
                             }
                             break;
                         case 'page':
-                            if (in_array($item->getIdentifier(), $this->getExcludedPages())
-                                || $item->getData('mp_exclude_sitemap')) {
+                            if ((in_array($item->getIdentifier(), $this->getExcludedPages())
+                                && $item->getData('mp_sitemap_active_config') == 1)
+                                || ($item->getData('mp_sitemap_active_config') == 0
+                                && $item->getData('mp_exclude_sitemap'))
+
+                            ) {
                                 continue 2;
                             }
                             $html .= $this->renderLinkElement($this->getUrl($item->getIdentifier()), $item->getTitle());
                             break;
                         case 'product':
-                            if ($item->getData('mp_exclude_sitemap')) {
+                            if ($item->getData('mp_sitemap_active_config') == 0
+                                && $item->getData('mp_exclude_sitemap')
+                            ) {
                                 continue 2;
                             }
                             $html .= $this->renderLinkElement($this->getUrl($item->getProductUrl()), $item->getName());
@@ -437,7 +447,7 @@ class Sitemap extends Template
         $htmlSitemap = '';
         $htmlSitemap .= $this->renderSection(
             'category',
-            $this->_helper->isEnableCategorySitemap(),
+            1,
             'Categories',
             $this->getCategoryCollection()
         );
@@ -449,7 +459,7 @@ class Sitemap extends Template
         );
         $htmlSitemap .= $this->renderSection(
             'product',
-            $this->_helper->isEnableProductSitemap(),
+            1,
             'Products',
             $this->getProductCollection()
         );
