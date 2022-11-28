@@ -397,6 +397,7 @@ class Sitemap extends Template
                             if (($item->getData('mp_sitemap_active_config') == 0
                                 && !$category->getData('mp_exclude_sitemap'))
                                 || ($item->getData('mp_sitemap_active_config') == 1
+                                && $excludeCategoryIds
                                 && !in_array($item->getId(), $excludeCategoryIds))
                             ) {
                                 $html .= $this->renderLinkElement(
