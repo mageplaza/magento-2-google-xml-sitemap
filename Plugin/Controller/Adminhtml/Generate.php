@@ -78,10 +78,11 @@ class Generate
         /* @var Sitemap $sitemap */
         $sitemap   = $this->sitemap->load($siteMapId);
         $sendTo    = explode(',', (string)$this->helperData->getXmlSitemapConfig('send_to'));
+
         if ($this->helperData->isEnabled()
             && $this->helperData->getXmlSitemapConfig('error_enabled')
             && $sitemap->getId()
-            && !$this->messageManager->getMessages()->getCountByType(MessageInterface::TYPE_SUCCESS)
+            && $this->messageManager->getMessages()->getCountByType(MessageInterface::TYPE_ERROR)
         ) {
             $this->helperData->sendMail(
                 $sendTo,
