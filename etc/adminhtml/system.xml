@@ -199,10 +199,10 @@
                 </field>
                 <field id="exclude_links" translate="label" type="textarea" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Exclude Links</label>
-                    <comment>Open link per line.</comment>
+                    <comment>One link per line.</comment>
                 </field>
                 <field id="exclude_product_type" translate="label" type="multiselect" sortOrder="26" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Exclude Products Types Sitemap</label>
+                    <label>Exclude Product Types Sitemap</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\Type</source_model>
                 </field>
                 <field id="exclude_product_page" translate="label" type="textarea" sortOrder="27" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
@@ -231,7 +231,7 @@
                     <source_model>Mageplaza\Sitemap\Model\Source\Page</source_model>
                 </field>
                 <field id="error_enabled" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Enable Email Notification when Generate Error</label>
+                    <label>Enable Generate Error Email Notification</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>If yes, will send an email when generating XML Sitemap fails.</comment>
                 </field>
@@ -243,7 +243,7 @@
                     </depends>
                 </field>
                 <field id="email_template" translate="label comment" type="select" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Email Template When Generate Error</label>
+                    <label>Generate Error Email Template</label>
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                     <depends>
                         <field id="error_enabled">1</field>
