@@ -22,7 +22,10 @@
 namespace Mageplaza\Sitemap\Model;
 
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\ProductFactory;
+use Magento\Catalog\Model\ResourceModel\Category\Collection;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\CatalogInventory\Model\Stock\Item;
 use Magento\Cms\Model\PageFactory;
 use Magento\Framework\App\ObjectManager;
@@ -66,6 +69,21 @@ class Sitemap extends CoreSitemap
     protected $_coreCategoryFactory;
 
     /**
+     * @var CollectionFactory
+     */
+    protected $_categoryCollection;
+
+    /**
+     * @var Collection
+     */
+    protected $collection;
+
+    /**
+     * @var CategoryRepository
+     */
+    protected $categoryRepository;
+
+    /**
      * @var ProductFactory
      */
     protected $_coreProductFactory;
@@ -100,6 +118,9 @@ class Sitemap extends CoreSitemap
      * @param PageFactory $corePageFactory
      * @param ProductFactory $coreProductFactory
      * @param CategoryFactory $coreCategoryFactory
+     * @param Collection $collection
+     * @param CollectionFactory $categoryCollection
+     * @param CategoryRepository $categoryRepository
      * @param Item $stockItem
      * @param DateTime $modelDate
      * @param StoreManagerInterface $storeManager
@@ -122,6 +143,9 @@ class Sitemap extends CoreSitemap
         PageFactory $corePageFactory,
         ProductFactory $coreProductFactory,
         CategoryFactory $coreCategoryFactory,
+        Collection $collection,
+        CollectionFactory $categoryCollection,
+        CategoryRepository $categoryRepository,
         Item $stockItem,
         DateTime $modelDate,
         StoreManagerInterface $storeManager,
@@ -131,6 +155,9 @@ class Sitemap extends CoreSitemap
         AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->collection           = $collection;
+        $this->_categoryCollection  = $categoryCollection;
+        $this->categoryRepository   = $categoryRepository;
         $this->helperConfig         = $helperConfig;
         $this->_coreProductFactory  = $coreProductFactory;
         $this->_corePageFactory     = $corePageFactory;
@@ -350,8 +377,16 @@ class Sitemap extends CoreSitemap
      */
     public function _getCategoryCollection($storeId)
     {
-        $collection = [];
-        foreach ($this->_categoryFactory->create()->getCollection($storeId) as $item) {
+        $collection          = [];
+        $storeRootCategoryId = $this->_storeManager->getStore()->getRootCategoryId();
+        $storeRootCategory   = $this->categoryRepository->get($storeRootCategoryId);
+        $categoryCollection  = $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->addFieldToFilter('entity_id', ['in' => $storeRootCategory->getAllChildren(true)])
+            ->addFieldToFilter('is_active', 1)
+            ->addFieldToFilter('include_in_menu', 1)
+            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]]);
+        $excludeCategoryIds  = $this->getExcludeCategoryIds($categoryCollection);
+        foreach ($categoryCollection as $item) {
             $category = $this->_coreCategoryFactory->create()->load($item->getId());
             $baseUrl  = $this->convertUrlCollection(self::URL, $item->getUrl());
             if ($category->getId() && $category->getData('mp_sitemap_active_config') == null) {
@@ -362,17 +397,8 @@ class Sitemap extends CoreSitemap
                 if ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)) {
                     continue;
                 }
-                $excludeCategoryConfig = explode('/', $this->helperConfig->getXmlSitemapConfig('exclude_category_page') ?? '');
-                if ($excludeCategoryConfig) {
-                    $match = '';
-                    foreach ($excludeCategoryConfig as $url) {
-                        if ($url != '' && str_contains($baseUrl, $url)) {
-                            $match = $url;
-                        }
-                    }
-                    if ($match) {
-                        continue;
-                    }
+                if ($excludeCategoryIds && in_array($item->getId(), $excludeCategoryIds)) {
+                    continue;
                 }
             } else {
                 if ($category->getData('mp_exclude_sitemap') == 1) {
@@ -508,5 +534,119 @@ class Sitemap extends CoreSitemap
         }
 
         return $url;
+    }
+
+    /**
+     * @param $categoryCollection
+     * @return false|string[]
+     */
+    public function getExcludeCategoryIds($categoryCollection) {
+        $excludeCategories = $this->helperConfig->getXmlSitemapConfig('exclude_category_page');
+        $excludeIds        = [];
+        if (!empty($excludeCategories)) {
+            $excludeCategories = array_map('trim', explode(
+                "\n",
+                $excludeCategories
+                ?? ''));
+
+            $allExcludeIds = '';
+            foreach ($excludeCategories as $excludeCategory) {
+                if (!empty($excludeCategory)) {
+                    try {
+                        $testRegex = preg_match($excludeCategory, '');
+                        if ($testRegex) {
+                            $allExcludeIds .= '-' . $this->filterCategoryWithRegex($excludeCategory);
+                        } else {
+                            $excludePath = $this->getExcludePath($excludeCategory);
+                            $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
+                        }
+                    } catch (\Exception $e) {
+                        $excludePath = $this->getExcludePath($excludeCategory);
+                        $allExcludeIds .= '-' . $this->filterCategoryWithPath($excludePath, $categoryCollection);
+                    }
+                }
+            }
+
+            $excludeIds = explode('-', $allExcludeIds ?? '');
+        }
+
+        return $excludeIds;
+    }
+
+    /**
+     * @param $regex
+     *
+     * @return string
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    protected function filterCategoryWithRegex($regex)
+    {
+        $excludeCategoriesIds = [];
+        $categoryCollection = $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->setStoreId($this->_storeManager->getStore()->getId());
+        foreach ($categoryCollection as $category) {
+            if (!preg_match($regex, $category->getUrlPath())) {
+                $excludeCategoriesIds[] = $category->getId();
+            }
+        }
+
+        return implode('-', $excludeCategoriesIds);
+    }
+
+    /**
+     * @param $excludeCategory
+     *
+     * @return string
+     */
+    protected function getExcludePath($excludeCategory)
+    {
+        if ($excludeCategory[0] == '/') {
+            $excludeCategory = substr($excludeCategory, 1);
+        }
+        if ($excludeCategory[-1] == '/') {
+            $excludeCategory = substr($excludeCategory, 0, -1);
+        }
+
+        return $excludeCategory;
+    }
+
+    /**
+     * @param $path
+     * @param $categoryCollection
+     *
+     * @return string
+     */
+    protected function filterCategoryWithPath($path, $categoryCollection)
+    {
+        $excludeIds = [];
+        foreach ($categoryCollection as $category) {
+            if ($this->isExcludeCategory($category, $path)) {
+                $excludeIds[] = $category->getData('entity_id');
+            }
+        }
+
+        return implode('-', $excludeIds);
+    }
+
+    /**
+     * @param $category
+     * @param $path
+     *
+     * @return bool
+     */
+    public function isExcludeCategory($category, $path)
+    {
+        $filterPath = explode('/', $path ?? '');
+        $categoryPath = $category->getUrlPath();
+        $categoryPath = explode('/', $categoryPath ?? '');
+
+        foreach ($filterPath as $pathInfo) {
+            if (!in_array($pathInfo, $categoryPath)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
