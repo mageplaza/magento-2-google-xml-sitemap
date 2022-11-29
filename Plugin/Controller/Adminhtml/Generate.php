@@ -83,6 +83,7 @@ class Generate
             && $this->helperData->getXmlSitemapConfig('error_enabled')
             && $sitemap->getId()
             && $this->messageManager->getMessages()->getCountByType(MessageInterface::TYPE_ERROR)
+            && $sendTo
         ) {
             $this->helperData->sendMail(
                 $sendTo,
