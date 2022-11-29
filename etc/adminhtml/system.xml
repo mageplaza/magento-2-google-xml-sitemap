@@ -120,7 +120,7 @@
                         <field id="page">1</field>
                     </depends>
                 </field>
-                <field id="exclude_page_listing" translate="label" type="multiselect" sortOrder="320" showInDefault="1" canRestore="1">
+                <field id="exclude_page_listing" translate="label" type="multiselect" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Filter Cms Pages</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\Page</source_model>
                     <depends>
@@ -197,15 +197,15 @@
                     </depends>
                     <comment><![CDATA[From 0 to 1. E.g: 0.5 or 0.8]]></comment>
                 </field>
-                <field id="exclude_links" translate="label" type="textarea" sortOrder="24" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="exclude_links" translate="label" type="textarea" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Exclude Links</label>
                     <comment>Open link per line.</comment>
                 </field>
-                <field id="exclude_product_type" translate="label" type="multiselect" sortOrder="26" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="exclude_product_type" translate="label" type="multiselect" sortOrder="26" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Exclude Products Types Sitemap</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\Type</source_model>
                 </field>
-                <field id="exclude_product_page" translate="label" type="textarea" sortOrder="27" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="exclude_product_page" translate="label" type="textarea" sortOrder="27" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Exclude Product Page</label>
                     <comment>
                         <![CDATA[Display Product Pages in XML Sitemap except those with the above selected string. Separated by a line break.<br />
@@ -215,7 +215,7 @@
                         Support Regular expression]]>
                     </comment>
                 </field>
-                <field id="exclude_category_page" translate="label" type="textarea" sortOrder="28" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="exclude_category_page" translate="label" type="textarea" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Exclude Category Page</label>
                     <comment>
                         <![CDATA[Display Category Pages in XML Sitemap except those with the above selected string. Separated by a line break.<br/>
@@ -226,7 +226,7 @@
                         Support Regular expression]]>
                     </comment>
                 </field>
-                <field id="exclude_page_sitemap" translate="label" type="multiselect" sortOrder="29" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="exclude_page_sitemap" translate="label" type="multiselect" sortOrder="29" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Exclude Pages Sitemap</label>
                     <source_model>Mageplaza\Sitemap\Model\Source\Page</source_model>
                 </field>
