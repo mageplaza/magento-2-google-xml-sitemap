@@ -178,8 +178,8 @@ class Sitemap extends Template
     public function getCategoryCollection()
     {
         $storeRootCategoryId = $this->_storeManager->getStore()->getRootCategoryId();
-        $storeRootCategory = $this->categoryRepository->get($storeRootCategoryId);
-        $categoryCollection = $this->_categoryCollection->create()->addAttributeToSelect('*')
+        $storeRootCategory   = $this->categoryRepository->get($storeRootCategoryId);
+        $categoryCollection  = $this->_categoryCollection->create()->addAttributeToSelect('*')
             ->addFieldToFilter('entity_id', ['in' => $storeRootCategory->getAllChildren(true)])
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('include_in_menu', 1)
@@ -393,25 +393,31 @@ class Sitemap extends Template
                     switch ($section) {
                         case 'category':
                             $category           = $this->categoryRepository->get($item->getId());
-                            $excludeCategoryIds = $this->getExcludeCategoryIds($collection);
-                            if (($item->getData('mp_sitemap_active_config') == 0
-                                && !$category->getData('mp_exclude_sitemap'))
-                                || ($item->getData('mp_sitemap_active_config') == 1
-                                && $excludeCategoryIds
-                                && !in_array($item->getId(), $excludeCategoryIds))
-                            ) {
-                                $html .= $this->renderLinkElement(
-                                    $this->getCategoryUrl($item->getId()),
-                                    $item->getName(),
-                                    $item->getLevel()
-                                );
+                            $excludeCategoryIds = [];
+                            if (is_array($this->getExcludeCategoryIds($collection))) {
+                                $excludeCategoryIds = $this->getExcludeCategoryIds($collection);
                             }
+                            if ($category->getData('mp_sitemap_active_config') == 0
+                                && $category->getData('mp_exclude_sitemap')) {
+                                continue 2;
+                            }
+                            if ($this->_helper->getHtmlSitemapConfig('category')) {
+                                if ($category->getData('mp_sitemap_active_config') == 1
+                                    && in_array($item->getId(), $excludeCategoryIds)) {
+                                    continue 2;
+                                }
+                            }
+                            $html .= $this->renderLinkElement(
+                                $this->getCategoryUrl($item->getId()),
+                                $item->getName(),
+                                $item->getLevel()
+                            );
                             break;
                         case 'page':
                             if ((in_array($item->getIdentifier(), $this->getExcludedPages())
-                                && $item->getData('mp_sitemap_active_config') == 1)
+                                    && $item->getData('mp_sitemap_active_config') == 1)
                                 || ($item->getData('mp_sitemap_active_config') == 0
-                                && $item->getData('mp_exclude_sitemap'))
+                                    && $item->getData('mp_exclude_sitemap'))
 
                             ) {
                                 continue 2;
