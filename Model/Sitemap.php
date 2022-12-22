@@ -104,6 +104,11 @@ class Sitemap extends CoreSitemap
     protected $stockItem;
 
     /**
+     * @var $_category
+     */
+    protected $_category;
+
+    /**
      * Sitemap constructor.
      *
      * @param Context $context
@@ -379,13 +384,26 @@ class Sitemap extends CoreSitemap
     {
         $collection          = [];
         $excludeCategoryIds  = $this->getExcludeCategoryIds();
+        $storeRootCategoryId = $this->_storeManager->getStore()->getRootCategoryId();
+        $categoryCollections = $this->_categoryCollection->create()->addAttributeToSelect('*')
+            ->addFieldToFilter('is_active', 1)
+            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]])
+            ->setStoreId(0);
+
         foreach ($this->_categoryFactory->create()->getCollection($storeId) as $item) {
-            $category = $this->_coreCategoryFactory->create()->load($item->getId());
-            $baseUrl  = $this->convertUrlCollection(self::URL, $item->getUrl());
-            if ($category->getId() && $category->getData('mp_sitemap_active_config') == null) {
-                $category->setData('mp_sitemap_active_config', 1);
+            $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
+            foreach ($categoryCollections as $categoryCollection) {
+                $categoryCollection->setStoreId(0);
+                if ($categoryCollection->getId() === $item->getId()) {
+                    if ($categoryCollection->getId() && $categoryCollection->getData('mp_sitemap_active_config') == null) {
+                        $categoryCollection->setData('mp_sitemap_active_config', 1)->save();
+                    }
+                    $this->_category = $categoryCollection;
+                    break;
+                }
             }
-            if ($category->getData('mp_sitemap_active_config') == 1) {
+
+            if ($this->_category->getData('mp_sitemap_active_config') == 1) {
                 $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
                 if ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)) {
                     continue;
@@ -394,7 +412,7 @@ class Sitemap extends CoreSitemap
                     continue;
                 }
             } else {
-                if ($category->getData('mp_exclude_sitemap') == 1) {
+                if ($this->_category->getData('mp_exclude_sitemap') == 1) {
                     continue;
                 }
             }

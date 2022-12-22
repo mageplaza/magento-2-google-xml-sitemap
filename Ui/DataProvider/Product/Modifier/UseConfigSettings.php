@@ -13,17 +13,16 @@
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
  *
- * @category  Mageplaza
- * @package   Mageplaza_RewardPointsUltimate
- * @copyright Copyright (c) Mageplaza (https://www.mageplaza.com/)
- * @license   https://www.mageplaza.com/LICENSE.txt
+ * @category    Mageplaza
+ * @package     Mageplaza_Sitemap
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
 namespace Mageplaza\Sitemap\Ui\DataProvider\Product\Modifier;
 
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\AbstractModifier;
 use Magento\Framework\Stdlib\ArrayManager;
-use Magento\Ui\Component\Form\Field;
 
 /**
  * Class UseConfigSettings

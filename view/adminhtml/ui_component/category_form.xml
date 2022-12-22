@@ -46,6 +46,9 @@
                     <exports>
                         <link name="checked">ns = ${ $.ns }, index = mp_exclude_sitemap :disabled</link>
                     </exports>
+                    <imports>
+                        <link name="visible">${ $.provider}:data.visible</link>
+                    </imports>
                 </settings>
                 <formElements>
                     <checkbox>

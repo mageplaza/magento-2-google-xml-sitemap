@@ -35,4 +35,7 @@
             </argument>
         </arguments>
     </virtualType>
+    <type name="Magento\Catalog\Model\Category\DataProvider">
+        <plugin name="mp_sitemap_category_data_provider" type="Mageplaza\Sitemap\Model\Plugin\Catalog\Category\DataProvider" />
+    </type>
 </config>
