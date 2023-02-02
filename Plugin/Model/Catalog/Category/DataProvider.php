@@ -19,7 +19,7 @@
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
-namespace Mageplaza\Sitemap\Model\Plugin\Catalog\Category;
+namespace Mageplaza\Sitemap\Plugin\Model\Catalog\Category;
 
 use Magento\Catalog\Model\Category\DataProvider as CategoryDataProvider;
 use Magento\Store\Model\StoreManagerInterface;

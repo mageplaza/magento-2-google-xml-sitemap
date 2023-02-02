@@ -36,6 +36,9 @@
         </arguments>
     </virtualType>
     <type name="Magento\Catalog\Model\Category\DataProvider">
-        <plugin name="mp_sitemap_category_data_provider" type="Mageplaza\Sitemap\Model\Plugin\Catalog\Category\DataProvider" />
+        <plugin name="mp_sitemap_category_data_provider" type="Mageplaza\Sitemap\Plugin\Model\Catalog\Category\DataProvider" />
+    </type>
+    <type name="Magento\Catalog\Controller\Adminhtml\Category\Save">
+        <plugin name="mp_sitemap_category_save" type="Mageplaza\Sitemap\Plugin\Controller\Adminhtml\Category\Save" />
     </type>
 </config>

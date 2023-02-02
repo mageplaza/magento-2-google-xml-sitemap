@@ -26,7 +26,6 @@ use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
-use Magento\CatalogInventory\Model\Stock\Item;
 use Magento\Cms\Model\PageFactory;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\RequestInterface;
@@ -62,6 +61,8 @@ class Sitemap extends CoreSitemap
     const URL_BASIC     = 0;
     const URL           = 1;
     const HOMEPAGE_PATH = 'web/default/cms_home_page';
+    const YES           = 1;
+    const NO            = 0;
 
     /**
      * @var CategoryFactory
@@ -99,11 +100,6 @@ class Sitemap extends CoreSitemap
     protected $helperConfig;
 
     /**
-     * @var Item
-     */
-    protected $stockItem;
-
-    /**
      * @var $_category
      */
     protected $_category;
@@ -126,7 +122,6 @@ class Sitemap extends CoreSitemap
      * @param Collection $collection
      * @param CollectionFactory $categoryCollection
      * @param CategoryRepository $categoryRepository
-     * @param Item $stockItem
      * @param DateTime $modelDate
      * @param StoreManagerInterface $storeManager
      * @param RequestInterface $request
@@ -151,7 +146,6 @@ class Sitemap extends CoreSitemap
         Collection $collection,
         CollectionFactory $categoryCollection,
         CategoryRepository $categoryRepository,
-        Item $stockItem,
         DateTime $modelDate,
         StoreManagerInterface $storeManager,
         RequestInterface $request,
@@ -167,7 +161,6 @@ class Sitemap extends CoreSitemap
         $this->_coreProductFactory  = $coreProductFactory;
         $this->_corePageFactory     = $corePageFactory;
         $this->_coreCategoryFactory = $coreCategoryFactory;
-        $this->stockItem            = $stockItem;
 
         parent::__construct(
             $context,
@@ -387,23 +380,29 @@ class Sitemap extends CoreSitemap
         $storeRootCategoryId = $this->_storeManager->getStore()->getRootCategoryId();
         $categoryCollections = $this->_categoryCollection->create()->addAttributeToSelect('*')
             ->addFieldToFilter('is_active', 1)
-            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]])
-            ->setStoreId(0);
+            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]]);
 
         foreach ($this->_categoryFactory->create()->getCollection($storeId) as $item) {
             $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
             foreach ($categoryCollections as $categoryCollection) {
-                $categoryCollection->setStoreId(0);
                 if ($categoryCollection->getId() === $item->getId()) {
+                    $categoryCollection->setStoreId(0);
+
+                    /**
+                     * Save category mp_sitemap_active_config
+                     */
                     if ($categoryCollection->getId() && $categoryCollection->getData('mp_sitemap_active_config') == null) {
-                        $categoryCollection->setData('mp_sitemap_active_config', 1)->save();
+                        $categoryCollection->setData('mp_sitemap_active_config', self::YES)->save();
                     }
-                    $this->_category = $categoryCollection;
+
+                    $category = $this->helperConfig->createObject(\Magento\Catalog\Model\Category::class);
+                    $category->setStoreId($storeId)->load($item->getId());
+                    $this->_category = $category;
                     break;
                 }
             }
 
-            if ($this->_category->getData('mp_sitemap_active_config') == 1) {
+            if ($this->_category->getData('mp_sitemap_active_config') == self::YES) {
                 $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
                 if ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)) {
                     continue;
@@ -412,7 +411,8 @@ class Sitemap extends CoreSitemap
                     continue;
                 }
             } else {
-                if ($this->_category->getData('mp_exclude_sitemap') == 1) {
+
+                if ($this->_category->getData('mp_exclude_sitemap') == self::YES) {
                     continue;
                 }
             }
