@@ -105,6 +105,11 @@ class Sitemap extends CoreSitemap
     protected $_category;
 
     /**
+     * @var $_product
+     */
+    protected $_product;
+
+    /**
      * Sitemap constructor.
      *
      * @param Context $context
@@ -478,20 +483,22 @@ class Sitemap extends CoreSitemap
         $urlsConfig         = $this->helperConfig->getXmlSitemapConfig('exclude_product_page');
         $excludeLinkConfig  = $this->helperConfig->getXmlSitemapConfig('exclude_links');
         foreach ($ProductCollections as $item) {
-            $product = $this->_coreProductFactory->create()->load($item->getId());
+            $product = $this->_coreProductFactory->create()->setStoreId(0)->load($item->getId());
             $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
+
             if ($product->getId() && $product->getData('mp_sitemap_active_config') == null) {
-                $product->setData('mp_sitemap_active_config', 1);
+                $product->setData('mp_sitemap_active_config', self::YES)->save();
             }
 
-            if ($product->getData('mp_sitemap_active_config') == 1
-                && (in_array($product->getTypeId(), $productTypeConfig)
+            $this->_product = $this->_coreProductFactory->create()->setStoreId($storeId)->load($item->getId());
+            if ($this->_product->getData('mp_sitemap_active_config') == self::YES
+                && (in_array($this->_product->getTypeId(), $productTypeConfig)
                     || ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl))
-                    || ($urlsConfig && str_contains($urlsConfig, $product->getUrlKey())))
+                    || ($urlsConfig && str_contains($urlsConfig, $this->_product->getUrlKey())))
             ) {
                 continue;
             } else {
-                if ($product->getData('mp_exclude_sitemap') == 1) {
+                if ($this->_product->getData('mp_exclude_sitemap') == self::YES) {
                     continue;
                 }
             }

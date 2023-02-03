@@ -41,4 +41,7 @@
     <type name="Magento\Catalog\Controller\Adminhtml\Category\Save">
         <plugin name="mp_sitemap_category_save" type="Mageplaza\Sitemap\Plugin\Controller\Adminhtml\Category\Save" />
     </type>
+    <type name="Magento\Catalog\Controller\Adminhtml\Product\Save">
+        <plugin name="mp_sitemap_category_save" type="Mageplaza\Sitemap\Plugin\Controller\Adminhtml\Product\Save" />
+    </type>
 </config>

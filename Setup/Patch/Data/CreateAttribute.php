@@ -82,6 +82,7 @@ class CreateAttribute implements
     public function apply()
     {
         $setup = $this->moduleDataSetup;
+        $setup->startSetup();
 
         /**
          * Product attribute
@@ -98,7 +99,7 @@ class CreateAttribute implements
             'input'                   => 'select',
             'class'                   => '',
             'source'                  => MpBoolean::class,
-            'global'                  => ScopedAttributeInterface::SCOPE_GLOBAL,
+            'global'                  => ScopedAttributeInterface::SCOPE_STORE,
             'visible'                 => true,
             'required'                => false,
             'user_defined'            => false,
@@ -110,7 +111,7 @@ class CreateAttribute implements
             'used_in_product_listing' => true,
             'unique'                  => false,
             'group'                   => 'Search Engine Optimization',
-            'sort_order'              => 150,
+            'sort_order'              => 102,
             'apply_to'                => '',
         ]);
         $eavSetup->removeAttribute(Product::ENTITY, 'mp_sitemap_active_config');
@@ -121,9 +122,8 @@ class CreateAttribute implements
             'label'                   => '',
             'input'                   => 'select',
             'class'                   => '',
-            'description'             => 'Use Config Settings',
             'source'                  => Boolean::class,
-            'global'                  => ScopedAttributeInterface::SCOPE_GLOBAL,
+            'global'                  => ScopedAttributeInterface::SCOPE_STORE,
             'visible'                 => true,
             'required'                => false,
             'user_defined'            => false,
@@ -135,7 +135,7 @@ class CreateAttribute implements
             'used_in_product_listing' => true,
             'unique'                  => false,
             'group'                   => 'Search Engine Optimization',
-            'sort_order'              => 160,
+            'sort_order'              => 103,
             'apply_to'                => '',
         ]);
 
@@ -170,6 +170,8 @@ class CreateAttribute implements
             'global'       => ScopedAttributeInterface::SCOPE_STORE,
             'group'        => 'Search Engine Optimization',
         ]);
+
+        $setup->endSetup();
     }
 
     /**
@@ -203,5 +205,13 @@ class CreateAttribute implements
     public static function getDependencies()
     {
         return [];
+    }
+
+    /**
+     * @return string
+     */
+    public static function getVersion()
+    {
+        return '1.0.8';
     }
 }

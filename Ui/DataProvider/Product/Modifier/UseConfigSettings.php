@@ -23,6 +23,9 @@ namespace Mageplaza\Sitemap\Ui\DataProvider\Product\Modifier;
 
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\AbstractModifier;
 use Magento\Framework\Stdlib\ArrayManager;
+use Magento\Framework\Registry;
+use Magento\Store\Model\StoreManagerInterface;
+use Mageplaza\Sitemap\Helper\Data;
 
 /**
  * Class UseConfigSettings
@@ -35,7 +38,22 @@ class UseConfigSettings extends AbstractModifier
     /**
      * @var ArrayManager
      */
-    protected $arrayManager;
+    protected $_arrayManager;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $_storeManager;
+
+    /**
+     * @var Registry
+     */
+    protected $_registry;
+
+    /**
+     * @var Data
+     */
+    protected $_helper;
 
     /**
      * @var $_meta
@@ -45,12 +63,21 @@ class UseConfigSettings extends AbstractModifier
     /**
      * UseConfigSettings constructor.
      *
-     * @param ArrayManager $arrayManager
+     * @param ArrayManager $_arrayManager
+     * @param StoreManagerInterface $_storeManager
+     * @param Registry $_registry
+     * @param Data $_helper
      */
     public function __construct(
-        ArrayManager $arrayManager
+        ArrayManager $_arrayManager,
+        StoreManagerInterface $_storeManager,
+        Registry $_registry,
+        Data $_helper
     ) {
-        $this->arrayManager = $arrayManager;
+        $this->_arrayManager = $_arrayManager;
+        $this->_storeManager = $_storeManager;
+        $this->_registry     = $_registry;
+        $this->_helper       = $_helper;
     }
 
     /**
@@ -70,8 +97,12 @@ class UseConfigSettings extends AbstractModifier
      */
     public function modifyMeta(array $meta)
     {
+        if ($this->_storeManager->getStore()->getStoreId() != 0) {
+            unset($meta['search-engine-optimization']['children']['container_mp_sitemap_active_config']);
+        }
+
         $this->_meta = $meta;
-        $this->customizeEnableFieldField();
+        $this->customizeEnableField();
 
         return $this->_meta;
     }
@@ -79,7 +110,7 @@ class UseConfigSettings extends AbstractModifier
     /**
      * @return $this
      */
-    protected function customizeEnableFieldField()
+    protected function customizeEnableField()
     {
         $groupCode = $this->getGroupCodeByField($this->_meta, 'container_' . static::IS_ACTIVE);
         if (!$groupCode) {
@@ -87,9 +118,9 @@ class UseConfigSettings extends AbstractModifier
         }
 
         // enable field
-        $containerPath = $this->arrayManager->
-        findPath('container_' . static::IS_ACTIVE, $this->_meta, null, 'children');
-        $this->_meta   = $this->arrayManager->merge($containerPath, $this->_meta, [
+        $containerPath = $this->_arrayManager
+            ->findPath('container_' . static::IS_ACTIVE, $this->_meta, null, 'children');
+        $this->_meta   = $this->_arrayManager->merge($containerPath, $this->_meta, [
             'children' => [
                 static::IS_ACTIVE => [
                     'arguments' => [
@@ -105,7 +136,7 @@ class UseConfigSettings extends AbstractModifier
                                     'true'  => '1',
                                 ],
                                 'exports'           => [
-                                    'checked' => '${$.parentName}.' . static::IS_ACTIVE . ':useConfig',
+                                    'checked'       => '${$.parentName}.' . static::IS_ACTIVE . ':useConfig',
                                     '__disableTmpl' => ['checked' => false]
                                 ],
                             ],
