@@ -78,12 +78,12 @@ class Generate
         /* @var Sitemap $sitemap */
         $sitemap   = $this->sitemap->load($siteMapId);
         $sendTo    = [];
-        if ($this->helperData->getXmlSitemapConfig('send_to')) {
-            $sendTo = explode(',', $this->helperData->getXmlSitemapConfig('send_to'));
+        if ($this->helperData->getXmlSitemapConfig('send_to', $sitemap->getStoreId())) {
+            $sendTo = explode(',', $this->helperData->getXmlSitemapConfig('send_to', $sitemap->getStoreId()));
         }
 
         if ($this->helperData->isEnabled()
-            && $this->helperData->getXmlSitemapConfig('error_enabled')
+            && $this->helperData->getXmlSitemapConfig('error_enabled', $sitemap->getStoreId())
             && $sitemap->getId()
             && $this->messageManager->getMessages()->getCountByType(MessageInterface::TYPE_ERROR)
             && $sendTo != null
@@ -91,7 +91,7 @@ class Generate
             $this->helperData->sendMail(
                 $sendTo,
                 $sitemap->getSitemapFilename(),
-                $this->helperData->getXmlSitemapConfig('email_template'),
+                $this->helperData->getXmlSitemapConfig('email_template', $sitemap->getStoreId()),
                 $this->helperData->getStoreId()
             );
         }
