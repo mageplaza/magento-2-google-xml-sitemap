@@ -25,6 +25,10 @@ use Magento\Catalog\Model\Category\DataProvider as CategoryDataProvider;
 use Magento\Store\Model\StoreManagerInterface;
 use Mageplaza\Sitemap\Helper\Data;
 
+/**
+ * Class DataProvider
+ * @package Mageplaza\Sitemap\Plugin\Model\Catalog\Category
+ */
 class DataProvider
 {
     /**

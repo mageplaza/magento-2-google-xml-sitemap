@@ -406,7 +406,13 @@ class Sitemap extends CoreSitemap
                     break;
                 }
             }
-
+            if ($this->_category->getId() == 4) {
+                echo '<pre>';
+                var_dump($this->_category->getData('mp_sitemap_active_config'));
+                var_dump($this->_category->getData('mp_exclude_sitemap'));
+                echo '</pre>';
+                die;
+            }
             if ($this->_category->getData('mp_sitemap_active_config') == self::YES) {
                 $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
                 if ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)) {
@@ -415,11 +421,8 @@ class Sitemap extends CoreSitemap
                 if ($excludeCategoryIds && in_array($item->getId(), $excludeCategoryIds)) {
                     continue;
                 }
-            } else {
-
-                if ($this->_category->getData('mp_exclude_sitemap') == self::YES) {
-                    continue;
-                }
+            } else if ($this->_category->getData('mp_exclude_sitemap') == self::YES) {
+                        continue;
             }
 
             $collection[] = $item;
@@ -452,12 +455,10 @@ class Sitemap extends CoreSitemap
                     || ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)))
             ) {
                 continue;
-            } else {
-                if ($pageData->getData('mp_exclude_sitemap') == 1
+            } else if ($pageData->getData('mp_exclude_sitemap') == 1
                     || $this->optimizeHomepage($storeId, $item)
                 ) {
                     continue;
-                }
             }
             $collection[] = $item;
         }
@@ -497,10 +498,8 @@ class Sitemap extends CoreSitemap
                     || ($urlsConfig && str_contains($urlsConfig, $this->_product->getUrlKey())))
             ) {
                 continue;
-            } else {
-                if ($this->_product->getData('mp_exclude_sitemap') == self::YES) {
+            } else if ($this->_product->getData('mp_exclude_sitemap') == self::YES) {
                     continue;
-                }
             }
 
             $collection[] = $item;

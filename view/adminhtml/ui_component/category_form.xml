@@ -43,9 +43,9 @@
                 </argument>
                 <settings>
                     <dataType>boolean</dataType>
-                    <exports>
-                        <link name="checked">ns = ${ $.ns }, index = mp_exclude_sitemap :disabled</link>
-                    </exports>
+                    <imports>
+                        <link name="disabled">ns = ${ $.ns }, mp_exclude_sitemap :disabled</link>
+                    </imports>
                     <imports>
                         <link name="visible">${ $.provider}:data.visible</link>
                     </imports>
