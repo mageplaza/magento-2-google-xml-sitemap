@@ -406,13 +406,7 @@ class Sitemap extends CoreSitemap
                     break;
                 }
             }
-            if ($this->_category->getId() == 4) {
-                echo '<pre>';
-                var_dump($this->_category->getData('mp_sitemap_active_config'));
-                var_dump($this->_category->getData('mp_exclude_sitemap'));
-                echo '</pre>';
-                die;
-            }
+
             if ($this->_category->getData('mp_sitemap_active_config') == self::YES) {
                 $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
                 if ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)) {
