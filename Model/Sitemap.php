@@ -382,32 +382,16 @@ class Sitemap extends CoreSitemap
     {
         $collection          = [];
         $excludeCategoryIds  = $this->getExcludeCategoryIds();
-        $storeRootCategoryId = $this->_storeManager->getStore()->getRootCategoryId();
-        $categoryCollections = $this->_categoryCollection->create()->addAttributeToSelect('*')
-            ->addFieldToFilter('is_active', 1)
-            ->addFieldToFilter('entity_id', ['nin' => [$storeRootCategoryId]]);
-
         foreach ($this->_categoryFactory->create()->getCollection($storeId) as $item) {
-            $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
-            foreach ($categoryCollections as $categoryCollection) {
-                if ($categoryCollection->getId() === $item->getId()) {
-                    $categoryCollection->setStoreId(0);
-
-                    /**
-                     * Save category mp_sitemap_active_config
-                     */
-                    if ($categoryCollection->getId() && $categoryCollection->getData('mp_sitemap_active_config') == null) {
-                        $categoryCollection->setData('mp_sitemap_active_config', self::YES)->save();
-                    }
-
-                    $category = $this->helperConfig->createObject(\Magento\Catalog\Model\Category::class);
-                    $category->setStoreId($storeId)->load($item->getId());
-                    $this->_category = $category;
-                    break;
-                }
-            }
-
-            if ($this->_category->getData('mp_sitemap_active_config') == self::YES) {
+            $baseUrl          = $this->convertUrlCollection(self::URL, $item->getUrl());
+            $categoryAllStore = $this->categoryRepository->get($item->getId(), 0);
+            $this->_category  = $this->categoryRepository->get($item->getId(), $storeId);
+            if ($categoryAllStore->getId()
+                && ($categoryAllStore->getData('mp_sitemap_active_config') == self::YES
+                    || $categoryAllStore->getData('mp_sitemap_active_config') == null)
+                && ($this->_category->getData('mp_sitemap_active_config') == self::YES
+                    || $this->_category->getData('mp_sitemap_active_config') == null)
+            ) {
                 $excludeLinkConfig = $this->helperConfig->getXmlSitemapConfig('exclude_links');
                 if ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl)) {
                     continue;
@@ -416,7 +400,7 @@ class Sitemap extends CoreSitemap
                     continue;
                 }
             } else if ($this->_category->getData('mp_exclude_sitemap') == self::YES) {
-                        continue;
+                continue;
             }
 
             $collection[] = $item;
@@ -478,12 +462,14 @@ class Sitemap extends CoreSitemap
         $urlsConfig         = $this->helperConfig->getXmlSitemapConfig('exclude_product_page');
         $excludeLinkConfig  = $this->helperConfig->getXmlSitemapConfig('exclude_links');
         foreach ($ProductCollections as $item) {
-            $product = $this->_coreProductFactory->create()->setStoreId(0)->load($item->getId());
-            $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
-
-            $this->_product = $this->_coreProductFactory->create()->setStoreId($storeId)->load($item->getId());
-            if ($product->getId()
-                && ($product->getData('mp_sitemap_active_config') == null || $product->getData('mp_sitemap_active_config') == self::YES)
+            $baseUrl         = $this->convertUrlCollection(self::URL, $item->getUrl());
+            $productAllStore = $this->_coreProductFactory->create()->setStoreId(0)->load($item->getId());
+            $this->_product  = $this->_coreProductFactory->create()->setStoreId($storeId)->load($item->getId());
+            if ($productAllStore->getId()
+                && ($productAllStore->getData('mp_sitemap_active_config') == null
+                    || $productAllStore->getData('mp_sitemap_active_config') == self::YES)
+                && ($this->_product->getData('mp_sitemap_active_config') == self::YES
+                    || $this->_product->getData('mp_sitemap_active_config') == null)
             ) {
                 if (in_array($this->_product->getTypeId(), $productTypeConfig)
                     || ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl))

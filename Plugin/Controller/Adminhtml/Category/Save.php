@@ -96,6 +96,10 @@ class Save
                 if ($attributeCode == 'mp_exclude_sitemap' && $attributeValue == 1) {
                     $categoryCurrent->setData($attributeCode, null);
                     $categoryCurrent->setData('mp_sitemap_active_config', $categoryAll->getData('mp_sitemap_active_config'));
+                    if ($categoryAll->getData('mp_sitemap_active_config') == self::YES
+                        || $categoryAll->getData('mp_sitemap_active_config') == null) {
+                        $categoryCurrent->setData('mp_sitemap_active_config', self::YES);
+                    }
                 } else if ($attributeCode == 'mp_exclude_sitemap' && $attributeValue == 0) {
                     $categoryCurrent->setData('mp_sitemap_active_config', self::NO);
                 }
