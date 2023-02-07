@@ -481,19 +481,18 @@ class Sitemap extends CoreSitemap
             $product = $this->_coreProductFactory->create()->setStoreId(0)->load($item->getId());
             $baseUrl = $this->convertUrlCollection(self::URL, $item->getUrl());
 
-            if ($product->getId() && $product->getData('mp_sitemap_active_config') == null) {
-                $product->setData('mp_sitemap_active_config', self::YES)->save();
-            }
-
             $this->_product = $this->_coreProductFactory->create()->setStoreId($storeId)->load($item->getId());
-            if ($this->_product->getData('mp_sitemap_active_config') == self::YES
-                && (in_array($this->_product->getTypeId(), $productTypeConfig)
-                    || ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl))
-                    || ($urlsConfig && str_contains($urlsConfig, $this->_product->getUrlKey())))
+            if ($product->getId()
+                && ($product->getData('mp_sitemap_active_config') == null || $product->getData('mp_sitemap_active_config') == self::YES)
             ) {
-                continue;
-            } else if ($this->_product->getData('mp_exclude_sitemap') == self::YES) {
+                if (in_array($this->_product->getTypeId(), $productTypeConfig)
+                    || ($excludeLinkConfig && str_contains($excludeLinkConfig, $baseUrl))
+                    || ($urlsConfig && str_contains($urlsConfig, $this->_product->getUrlKey()))
+                ) {
                     continue;
+                }
+            } else if ($this->_product->getData('mp_exclude_sitemap') == self::YES) {
+                continue;
             }
 
             $collection[] = $item;

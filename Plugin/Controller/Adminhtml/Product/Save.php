@@ -23,12 +23,16 @@ namespace Mageplaza\Sitemap\Plugin\Controller\Adminhtml\Product;
 
 use Magento\Catalog\Controller\Adminhtml\Product\Save as SaveProduct;
 use Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper;
-use \Magento\Catalog\Controller\Adminhtml\Product\Builder;
+use Magento\Catalog\Controller\Adminhtml\Product\Builder;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Store\Model\StoreManagerInterface;
 use Mageplaza\Sitemap\Helper\Data;
 
+/**
+ * Class Save
+ * @package Mageplaza\Sitemap\Plugin\Controller\Adminhtml\Product
+ */
 class Save
 {
     const YES = 1;
@@ -107,6 +111,10 @@ class Save
             foreach ($productPostData['use_default'] as $attributeCode => $attributeValue) {
                 if ($attributeCode == 'mp_exclude_sitemap' && $attributeValue == self::YES) {
                     $productCurrent->setData('mp_sitemap_active_config', $productAll->getData('mp_sitemap_active_config'));
+                    if ($productAll->getData('mp_sitemap_active_config') == self::YES
+                        || $productAll->getData('mp_sitemap_active_config') == null) {
+                        $productCurrent->setData('mp_sitemap_active_config', self::YES);
+                    }
                 } else if ($attributeCode == 'mp_exclude_sitemap' && $attributeValue == 0) {
                     $productCurrent->setData('mp_sitemap_active_config', self::NO);
                 }
