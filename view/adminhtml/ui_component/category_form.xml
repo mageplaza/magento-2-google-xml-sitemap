@@ -28,10 +28,11 @@
                     <item name="options" xsi:type="object">Mageplaza\Sitemap\Model\Source\Boolean</item>
                     <item name="config" xsi:type="array">
                         <item name="sortOrder" xsi:type="number">300</item>
-                        <item name="dataType" xsi:type="string">string</item>
+                        <item name="dataType" xsi:type="string">text</item>
                         <item name="formElement" xsi:type="string">select</item>
                         <item name="label" xsi:type="string" translate="true">Exclude Sitemap</item>
                         <item name="notice" xsi:type="string" translate="true">Added by Mageplaza Sitemap</item>
+                        <item name="dataScope" xsi:type="string">mp_exclude_sitemap</item>
                     </item>
                 </argument>
             </field>
@@ -39,13 +40,15 @@
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="default" xsi:type="number">1</item>
+                        <item name="component" xsi:type="string">Mageplaza_Sitemap/js/category/use-config-settings</item>
+                        <item name="dataScope" xsi:type="string">mp_sitemap_active_config</item>
                     </item>
                 </argument>
                 <settings>
                     <dataType>boolean</dataType>
-                    <imports>
-                        <link name="disabled">ns = ${ $.ns }, mp_exclude_sitemap :disabled</link>
-                    </imports>
+                    <exports>
+                        <link name="checked">${ $.parentName }.mp_sitemap_active_config:useConfig</link>
+                    </exports>
                     <imports>
                         <link name="visible">${ $.provider}:data.visible</link>
                     </imports>
@@ -62,6 +65,7 @@
                     </checkbox>
                 </formElements>
             </field>
+
         </container>
     </fieldset>
 </form>
