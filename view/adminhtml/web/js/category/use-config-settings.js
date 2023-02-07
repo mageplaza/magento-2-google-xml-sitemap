@@ -44,7 +44,7 @@ define([
             check = setInterval(function () {
                 var excludeSitemap = $("select[name=\"mp_exclude_sitemap\"]");
                 if (excludeSitemap.length) {
-                    self.disableField([excludeSitemap]);
+                    self.disableField(excludeSitemap);
                     clearInterval(check);
                 }
             }, 100);
@@ -55,14 +55,11 @@ define([
         /**
          * Disable field
          *
-         * @param {Array} fields
+         * @param field
          */
-        disableField: function (fields) {
+        disableField: function (field) {
             var self = this;
-
-            $.each(fields, function (index, field) {
-                field.prop('disabled', self.useConfig());
-            });
+            field.prop('disabled', !self.useConfig());
         },
 
         /**
@@ -71,7 +68,7 @@ define([
         toggleElement: function () {
             var self = this,
                 excludeSitemap = $("select[name=\"mp_exclude_sitemap\"]");
-            self.disableField([excludeSitemap]);
+            self.disableField(excludeSitemap);
         }
     });
 });
