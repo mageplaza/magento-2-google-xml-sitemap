@@ -1,6 +1,6 @@
 # Magento 2 Google XML Sitemap extension FREE
 
-> **(Update) 2023-02-08**: This project will be marked as a paid item and no longer be maintained as free. For further updates and technical support, please follow [Google XML Sitemap]((https://www.mageplaza.com/magento-2-google-sitemap/) for more information. We understand that this change might create inconvenience for our users. However, this is to ensure that the module will be updated with more useful features to support Magento 2 stores better. If you have any concerns or ideas about any features you would like to see, don’t hesitate to [contact us](https://www.mageplaza.com/support/) and leave a request.
+> **(Update) 2023-02-08**: This project will be marked as a paid item and no longer be maintained as free. For further updates and technical support, please follow [Google XML Sitemap](https://www.mageplaza.com/magento-2-google-sitemap/) for more information. We understand that this change might create inconvenience for our users. However, this is to ensure that the module will be updated with more useful features to support Magento 2 stores better. If you have any concerns or ideas about any features you would like to see, don’t hesitate to [contact us](https://www.mageplaza.com/support/) and leave a request.
 
 **Google XML Sitemap for Magento 2** helps Google search bots find all every corner on your website to index, bring in potential benefits for your SEO strategy. Also, the HTML sitemap will help users more easily search for information on your site than only use Magento default.
 
